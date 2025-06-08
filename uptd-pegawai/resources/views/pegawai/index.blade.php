@@ -1,10 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-5"> <!-- Tambahkan margin-top di sini -->
+<div class="container mt-5">
     <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">Data Pegawai</h4>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="card-title mb-0">Data Pegawai</h4>
+            <a href="{{ route('pegawai.create') }}" class="btn btn-primary">Tambah Pegawai</a>
         </div>
         <div class="card-body">
             <table class="table table-bordered" id="myTable">
@@ -25,11 +26,8 @@
                             <td>{{ $item->nama }}</td>
                             <td>{{ $item->jabatan }}</td>
                             <td>{{ $item->alamat }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->tanggal_lahir)->locale('id')->translatedFormat('d F Y') }}</td>
                             <td>
-                                {{ \Carbon\Carbon::parse($item->tanggal_lahir)->locale('id')->translatedFormat('d F Y') }}
-                            </td>
-                            <td>
-                                <!-- Isi aksi nanti jika perlu -->
                                 <a href="#" class="btn btn-sm btn-primary">Edit</a>
                                 <a href="#" class="btn btn-sm btn-danger">Hapus</a>
                             </td>
