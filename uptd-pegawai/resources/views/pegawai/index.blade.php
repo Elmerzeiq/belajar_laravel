@@ -3,10 +3,13 @@
 @section('content')
 <div class="container">
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     @endif
 
-    {{-- Bar Judul Data Pegawai --}}
+    {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded shadow-sm mb-3 border">
         <h4 class="mb-0">
             <i class="bi bi-file-earmark-text-fill me-2"></i> Data Pegawai
@@ -16,23 +19,24 @@
         </a>
     </div>
 
-    {{-- Tabel Pegawai --}}
+    {{-- Table --}}
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" id="myTable">
+                <table class="table table-bordered table-striped">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 50px;">No.</th>
+                            <th>No.</th>
                             <th>Nama</th>
                             <th>NIP</th>
                             <th>Jabatan</th>
                             <th>Gaji Pokok</th>
                             <th>Insentif Kotor</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($pegawai as $index => $item)
+                        @forelse ($pegawai as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->nama }}</td>
@@ -40,8 +44,27 @@
                             <td>{{ $item->jabatan }}</td>
                             <td>{{ format_rupiah($item->gaji_pokok) }}</td>
                             <td>{{ format_rupiah($item->insentif_kotor) }}</td>
+                            <td class="text-center">
+                                {{-- Edit button --}}
+                                <a href="{{ route('pegawai.edit', $item->id) }}" class="btn btn-sm btn-warning" title="Edit">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+
+                                {{-- Delete form --}}
+                                <form action="{{ route('pegawai.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin hapus pegawai {{ $item->nama }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center">Tidak ada data pegawai.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

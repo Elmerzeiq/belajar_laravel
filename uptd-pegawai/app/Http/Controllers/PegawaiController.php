@@ -37,7 +37,21 @@ class PegawaiController extends Controller
         ]);
 
         Pegawai::create($request->all());
-
         return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil disimpan.');
+    }
+    public function edit(String $id)
+    {
+        $pegawai = Pegawai::findOrFail($id);
+        return view('pegawai.edit', compact('pegawai'));
+    }
+    public function update(Request $request, Pegawai $pegawai)
+    {
+        $pegawai->update($request->all());
+        return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil diperbarui.');
+    }
+    public function destroy(String $id)
+    {
+        Pegawai::destroy($id);
+        return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil dihapus.');
     }
 }
