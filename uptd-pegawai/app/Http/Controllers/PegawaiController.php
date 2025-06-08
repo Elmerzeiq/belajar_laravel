@@ -12,30 +12,32 @@ class PegawaiController extends Controller
         $pegawai = Pegawai::all();
         return view('pegawai.index', compact('pegawai'));
     }
+
     public function create()
     {
         return view('pegawai.create');
     }
+
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'nama' => 'required',
-                'jabatan' => 'required',
-                'alamat' => 'required',
-                'tanggal_lahir' => 'required',
-
-            ],
-            [
-                'nama.required' => 'Nama Pegawai harus diisi.',
-                'jabatan.required' => 'Jabatan harus diisi.',
-                'alamat.required' => 'Alamat harus diisi.',
-                'tanggal_lahir.required' => 'Tanggal Lahir harus diisi.',
-
-            ]
-        );
+        $request->validate([
+            'nama' => 'required|string',
+            'nip' => 'required|numeric',
+            'jabatan' => 'required|string',
+            'gaji_pokok' => 'required|numeric',
+            'insentif_kotor' => 'required|numeric',
+        ], [
+            'nama.required' => 'Nama Pegawai harus diisi.',
+            'nip.required' => 'NIP harus diisi.',
+            'jabatan.required' => 'Jabatan harus diisi.',
+            'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
+            'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
+            'gaji_pokok.numeric' => 'Gaji Pokok harus berupa angka.',
+            'insentif_kotor.numeric' => 'Insentif Kotor harus berupa angka.',
+        ]);
 
         Pegawai::create($request->all());
+
         return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil disimpan.');
     }
 }

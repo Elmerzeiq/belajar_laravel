@@ -2,52 +2,113 @@
 
 @section('content')
 <div class="container">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="card-title">Form Tambah Pegawai</h4>
-            <div>
-                <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Kembali</a>
-            </div>
-        </div>
-        <div class="card-body">
-            <form action="{{ route('pegawai.store') }}" method="POST">
-                @csrf
-
-                <div class="form-group">
-                    <label for="nama" class="@error('nama') text-danger @enderror">Nama Pegawai</label>
-                    <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama" value="{{ old('nama') }}" autofocus>
-                    @error('nama')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="jabatan" class="@error('jabatan') text-danger @enderror">Jabatan</label>
-                    <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan') }}">
-                    @error('jabatan')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="alamat" class="@error('alamat') text-danger @enderror">Alamat</label>
-                    <input type="text" class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" value="{{ old('alamat') }}">
-                    @error('alamat')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="tanggal_lahir" class="@error('tanggal_lahir') text-danger @enderror">Tanggal Lahir</label>
-                    <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}">
-                    @error('tanggal_lahir')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-                <button type="submit" class="btn btn-primary mt-3">Simpan</button>
-            </form>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Tambah Data Pegawai</h1>
+        <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
+
+    <form action="{{ route('pegawai.store') }}" method="POST" id="pegawai-form">
+        @csrf
+
+        <div class="mb-3">
+            <label for="nama" class="form-label @error('nama') text-danger @enderror">Nama</label>
+            <input
+                type="text"
+                name="nama"
+                id="nama"
+                class="form-control @error('nama') is-invalid @enderror"
+                value="{{ old('nama') }}"
+                autofocus
+
+            >
+            @error('nama')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="nip" class="form-label @error('nip') text-danger @enderror">NIP</label>
+            <input
+                type="number"
+                name="nip"
+                id="nip"
+                class="form-control @error('nip') is-invalid @enderror"
+                value="{{ old('nip') }}"
+
+            >
+            @error('nip')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="jabatan" class="form-label @error('jabatan') text-danger @enderror">Jabatan</label>
+            <input
+                type="text"
+                name="jabatan"
+                id="jabatan"
+                class="form-control @error('jabatan') is-invalid @enderror"
+                value="{{ old('jabatan') }}"
+
+            >
+            @error('jabatan')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="gaji_pokok" class="form-label @error('gaji_pokok') text-danger @enderror">Gaji Pokok</label>
+            <input
+                type="text"
+                name="gaji_pokok"
+                id="gaji_pokok"
+                class="form-control @error('gaji_pokok') is-invalid @enderror"
+                value="{{ old('gaji_pokok') }}"
+
+            >
+            @error('gaji_pokok')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="insentif_kotor" class="form-label @error('insentif_kotor') text-danger @enderror">Insentif Kotor</label>
+            <input
+                type="text"
+                name="insentif_kotor"
+                id="insentif_kotor"
+                class="form-control @error('insentif_kotor') is-invalid @enderror"
+                value="{{ old('insentif_kotor') }}"
+
+            >
+            @error('insentif_kotor')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary">Simpan</button>
+    </form>
 </div>
+
+{{-- AutoNumeric untuk format input rupiah --}}
+<script src="https://cdn.jsdelivr.net/npm/autonumeric@4.6.0/dist/autoNumeric.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new AutoNumeric('#gaji_pokok', {
+            currencySymbol: 'Rp ',
+            decimalPlaces: 0,
+            digitGroupSeparator: '.',
+            currencySymbolPlacement: 'prefix',
+            unformatOnSubmit: true
+        });
+
+        new AutoNumeric('#insentif_kotor', {
+            currencySymbol: 'Rp ',
+            decimalPlaces: 0,
+            digitGroupSeparator: '.',
+            currencySymbolPlacement: 'prefix',
+            unformatOnSubmit: true
+        });
+    });
+</script>
 @endsection

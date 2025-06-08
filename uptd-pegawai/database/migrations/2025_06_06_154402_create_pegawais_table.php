@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('pegawais', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
+            $table->string('nip');
             $table->string('jabatan');
-            $table->string('alamat');
-            $table->date('tanggal_lahir');
+            $table->integer('gaji_pokok');
+            $table->integer('insentif_kotor');
             $table->timestamps();
         });
     }

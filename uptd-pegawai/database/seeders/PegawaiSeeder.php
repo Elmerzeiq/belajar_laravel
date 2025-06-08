@@ -13,11 +13,13 @@ class PegawaiSeeder extends Seeder
      */
     public function run(): void
     {
+
         Pegawai::create([
             'nama' => 'John Doe',
+            'nip' => '123456789',
             'jabatan' => 'Manager',
-            'alamat' => '123 Main St, Anytown, USA',
-            'tanggal_lahir' => '1980-01-01',
+            'gaji_pokok' => '1000000',
+            'insentif_kotor' => '500000',
         ]);
         //
     }
