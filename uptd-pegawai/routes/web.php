@@ -27,4 +27,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Route halaman utama setelah login
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+    // Resource route untuk CRUD potongan tetap
+    Route::resource('potongan-tetap', App\Http\Controllers\PotonganTetapController::class);
+
 });
