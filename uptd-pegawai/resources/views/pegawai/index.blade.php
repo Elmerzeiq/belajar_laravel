@@ -1,13 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.mantis')
 
 @section('content')
-<div class="container">
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+<div class="">
+
 
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded shadow-sm mb-3 border">

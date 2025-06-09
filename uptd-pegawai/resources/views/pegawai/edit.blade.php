@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.mantis')
 
 @section('content')
-<div class="container">
+<div class="">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Edit Data Pegawai</h1>
         <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Kembali</a>
