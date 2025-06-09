@@ -13,6 +13,7 @@
         <x-sidebar.links title="Home" route="home" icon="ti ti-home"></x-sidebar.links>
         <x-sidebar.links title="Data Pegawai" route="pegawai.index" icon="ti ti-dashboard"></x-sidebar.links>
         <x-sidebar.links title="Absensi" route="absensi.import" icon="ti ti-dashboard"></x-sidebar.links>
+        <x-sidebar.links title="Rekap Absensi" route="rekap.gaji" icon="ti ti-dashboard"></x-sidebar.links>
           </ul>
         </li>
     </div>
