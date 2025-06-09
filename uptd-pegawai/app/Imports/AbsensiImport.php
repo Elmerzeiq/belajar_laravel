@@ -32,7 +32,7 @@ class AbsensiImport implements ToModel, WithHeadingRow
             : date('H:i:s', strtotime($row['jam_pulang']));
 
         $waktuMasukNormal = strtotime('08:00:00');
-        $waktuPulangNormal = strtotime('16:30:00');
+        $waktuPulangNormal = strtotime('16:00:00');
 
         $terlambatMenit = max(0, (strtotime($jamMasuk) - $waktuMasukNormal) / 60);
         $pulangCepatMenit = max(0, ($waktuPulangNormal - strtotime($jamPulang)) / 60);
