@@ -81,49 +81,7 @@
               <button type="submit" class="btn btn-primary">Login</button>
             </div>
             </form>
-            <div class="saprator mt-3">
-              <span>Login with</span>
-            </div>
-            <div class="row">
-              <div class="col-4">
-                <div class="d-grid">
-                  <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                    <img src="{{ asset('template/dist') }}/assets/images/authentication/google.svg" alt="img"> <span class="d-none d-sm-inline-block"> Google</span>
-                  </button>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="d-grid">
-                  <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                    <img src="{{ asset('template/dist') }}/assets/images/authentication/twitter.svg" alt="img"> <span class="d-none d-sm-inline-block"> Twitter</span>
-                  </button>
-                </div>
-              </div>
-              <div class="col-4">
-                <div class="d-grid">
-                  <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                    <img src="{{ asset('template/dist') }}/assets/images/authentication/facebook.svg" alt="img"> <span class="d-none d-sm-inline-block"> Facebook</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="auth-footer row">
-          <!-- <div class=""> -->
-            <div class="col my-1">
-              <p class="m-0">Copyright © <a href="#">Codedthemes</a></p>
-            </div>
-            <div class="col my-1">
-              <p class="m-0">Distributed by <a href="https://themewagon.com">ThemeWagon</a></p>
-            </div>
-            <div class="col-auto my-1">
-              <ul class="list-inline footer-link mb-0">
-                <li class="list-inline-item"><a href="#">Home</a></li>
-                <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
-                <li class="list-inline-item"><a href="#">Contact us</a></li>
-              </ul>
-            </div>
+
           <!-- </div> -->
         </div>
       </div>
