@@ -3,7 +3,6 @@
 @section('content')
 <div class="">
 
-
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded shadow-sm mb-3 border">
         <h4 class="mb-0">
@@ -13,6 +12,11 @@
             <i class="bi bi-plus-lg"></i> Tambah Pegawai
         </a>
     </div>
+
+    {{-- Tampilkan alert jika tidak ada data --}}
+    @if($pegawai->isEmpty())
+        <div class="alert alert-info">Tidak ada data pegawai.</div>
+    @endif
 
     {{-- Table --}}
     <div class="card shadow-sm">
@@ -31,7 +35,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($pegawai as $index => $item)
+                        @foreach ($pegawai as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->nama }}</td>
@@ -40,12 +44,9 @@
                             <td>{{ format_rupiah($item->gaji_pokok) }}</td>
                             <td>{{ format_rupiah($item->insentif_kotor) }}</td>
                             <td class="text-center">
-                                {{-- Edit button --}}
                                 <a href="{{ route('pegawai.edit', $item->id) }}" class="btn btn-warning" title="Edit">
                                     <i class="bi bi-pencil-fill"></i> Edit
                                 </a>
-
-                                {{-- Delete form --}}
                                 <form action="{{ route('pegawai.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin hapus pegawai {{ $item->nama }}?')">
                                     @csrf
                                     @method('DELETE')
@@ -55,11 +56,7 @@
                                 </form>
                             </td>
                         </tr>
-                        @empty
-                        <tr>
-                            <td colspan="7" class="text-center">Tidak ada data pegawai.</td>
-                        </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
