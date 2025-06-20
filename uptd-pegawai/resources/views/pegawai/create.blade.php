@@ -19,7 +19,6 @@
                 class="form-control @error('nama') is-invalid @enderror"
                 value="{{ old('nama') }}"
                 autofocus
-
             >
             @error('nama')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -34,7 +33,6 @@
                 id="nip"
                 class="form-control @error('nip') is-invalid @enderror"
                 value="{{ old('nip') }}"
-
             >
             @error('nip')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -49,7 +47,6 @@
                 id="jabatan"
                 class="form-control @error('jabatan') is-invalid @enderror"
                 value="{{ old('jabatan') }}"
-
             >
             @error('jabatan')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -62,9 +59,9 @@
                 type="text"
                 name="gaji_pokok"
                 id="gaji_pokok"
+                autocomplete="off"
                 class="form-control @error('gaji_pokok') is-invalid @enderror"
                 value="{{ old('gaji_pokok') }}"
-
             >
             @error('gaji_pokok')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -77,9 +74,9 @@
                 type="text"
                 name="insentif_kotor"
                 id="insentif_kotor"
+                autocomplete="off"
                 class="form-control @error('insentif_kotor') is-invalid @enderror"
                 value="{{ old('insentif_kotor') }}"
-
             >
             @error('insentif_kotor')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -89,26 +86,26 @@
         <button type="submit" class="btn btn-primary">Simpan</button>
     </form>
 </div>
+@endsection
 
-{{-- AutoNumeric untuk format input rupiah --}}
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.6.0/dist/autoNumeric.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new AutoNumeric('#gaji_pokok', {
+        const options = {
             currencySymbol: 'Rp ',
             decimalPlaces: 0,
             digitGroupSeparator: '.',
-            currencySymbolPlacement: 'prefix',
-            unformatOnSubmit: true
-        });
+            decimalCharacter: ',',
+            currencySymbolPlacement: 'p',
+            unformatOnSubmit: true,
+            minimumValue: '0',
+            maximumValue: '9999999999',
+            modifyValueOnWheel: false,
+        };
 
-        new AutoNumeric('#insentif_kotor', {
-            currencySymbol: 'Rp ',
-            decimalPlaces: 0,
-            digitGroupSeparator: '.',
-            currencySymbolPlacement: 'prefix',
-            unformatOnSubmit: true
-        });
+        new AutoNumeric('#gaji_pokok', options);
+        new AutoNumeric('#insentif_kotor', options);
     });
 </script>
 @endsection

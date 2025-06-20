@@ -7,7 +7,7 @@
         <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
 
-    <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengubah pegawai ini?') }}" method="POST" id="pegawai-form">
+    <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengubah pegawai ini?')" id="pegawai-form">
         @csrf
         @method('PUT')
 
@@ -18,9 +18,8 @@
                 name="nama"
                 id="nama"
                 class="form-control @error('nama') is-invalid @enderror"
-                value="{{ $pegawai->nama }}"
+                value="{{ old('nama', $pegawai->nama) }}"
                 autofocus
-
             >
             @error('nama')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -34,8 +33,7 @@
                 name="nip"
                 id="nip"
                 class="form-control @error('nip') is-invalid @enderror"
-                value="{{ $pegawai->nip }}"
-
+                value="{{ old('nip', $pegawai->nip) }}"
             >
             @error('nip')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -49,8 +47,7 @@
                 name="jabatan"
                 id="jabatan"
                 class="form-control @error('jabatan') is-invalid @enderror"
-                value="{{ $pegawai->jabatan }}"
-
+                value="{{ old('jabatan', $pegawai->jabatan) }}"
             >
             @error('jabatan')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -63,9 +60,8 @@
                 type="text"
                 name="gaji_pokok"
                 id="gaji_pokok"
+                autocomplete="off"
                 class="form-control @error('gaji_pokok') is-invalid @enderror"
-                value="{{ $pegawai->gaji_pokok }}"
-
             >
             @error('gaji_pokok')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -78,9 +74,8 @@
                 type="text"
                 name="insentif_kotor"
                 id="insentif_kotor"
+                autocomplete="off"
                 class="form-control @error('insentif_kotor') is-invalid @enderror"
-                value="{{$pegawai->insentif_kotor }}"
-
             >
             @error('insentif_kotor')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -90,25 +85,39 @@
         <button type="submit" class="btn btn-primary">Simpan</button>
     </form>
 </div>
+@endsection
 
-{{-- AutoNumeric untuk format input rupiah --}}
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/autonumeric@4.6.0/dist/autoNumeric.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new AutoNumeric('#gaji_pokok', {
+        const options = {
             currencySymbol: 'Rp ',
             decimalPlaces: 0,
             digitGroupSeparator: '.',
-            currencySymbolPlacement: 'prefix',
-            unformatOnSubmit: true
-        });
+            decimalCharacter: ',',
+            currencySymbolPlacement: 'p',
+            unformatOnSubmit: true,
+            minimumValue: '0',
+            maximumValue: '9999999999',
+            modifyValueOnWheel: false,
+        };
 
-        new AutoNumeric('#insentif_kotor', {
-            currencySymbol: 'Rp ',
-            decimalPlaces: 0,
-            digitGroupSeparator: '.',
-            currencySymbolPlacement: 'prefix',
-            unformatOnSubmit: true
+        // Inisialisasi AutoNumeric
+        const gaji = new AutoNumeric('#gaji_pokok', options);
+        const insentif = new AutoNumeric('#insentif_kotor', options);
+
+        // Set nilai awal dari database (atau old() kalau ada error)
+        gaji.set('{{ old('gaji_pokok', $pegawai->gaji_pokok) }}');
+        insentif.set('{{ old('insentif_kotor', $pegawai->insentif_kotor) }}');
+
+        // Blok input selain angka (hanya boleh angka)
+        document.querySelectorAll('#gaji_pokok, #insentif_kotor').forEach(function(input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key.length === 1 && !/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                }
+            });
         });
     });
 </script>

@@ -1,4 +1,4 @@
-{{-- <div>
+<div>
     <!-- Nothing worth having comes easy. - Theodore Roosevelt -->
     <footer class="pc-footer">
     <div class="footer-wrapper container-fluid">
@@ -21,4 +21,4 @@
       </div>
     </div>
   </footer>
-</div> --}}
+</div>

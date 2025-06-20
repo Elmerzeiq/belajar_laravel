@@ -4,6 +4,10 @@ use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\AbsensiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\GajiController;
+use App\Http\Controllers\GajiReviewController;
+use App\Http\Controllers\PotonganTetapController;
+use App\Http\Controllers\AbsenImportController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -15,20 +19,31 @@ Route::middleware(['auth'])->group(function () {
     // Resource route untuk CRUD pegawai
     Route::resource('pegawai', PegawaiController::class);
 
-    // Route untuk import data absensi (form dan proses import)
-    Route::get('absensi/import', [AbsensiController::class, 'showImportForm'])->name('absensi.import.form');
-    Route::post('absensi/import', [AbsensiController::class, 'import'])->name('absensi.import');
-
-    // Route untuk menampilkan data absensi
-    Route::get('absensi', [AbsensiController::class, 'index'])->name('absensi.index');
-
     // Route untuk rekap potongan gaji
     Route::get('rekap/gaji', [AbsensiController::class, 'rekapPotongan'])->name('rekap.gaji');
 
-    // Route halaman utama setelah login
+    // Halaman utama setelah login
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     // Resource route untuk CRUD potongan tetap
-    Route::resource('potongan-tetap', App\Http\Controllers\PotonganTetapController::class);
+    Route::resource('potongan-tetap', PotonganTetapController::class);
 
+    // gaji index
+    Route::get('/gaji', [GajiController::class, 'index'])->name('gaji.index');
+
+    // Import Excel → Preview
+    Route::post('/absen/import', [AbsenImportController::class, 'import'])->name('absen.import');
+    Route::get('/gaji/preview', [AbsenImportController::class, 'preview'])->name('gaji.preview');
+
+    // Preview → Review (POST dari preview ke review)
+    Route::post('/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
+
+    // (Opsional) Import Absensi, jika ada tombol import absensi manual
+    Route::post('gaji/import-absensi', [GajiReviewController::class, 'importAbsensi'])->name('gaji.importAbsensi');
+
+    // Simpan Gaji
+    Route::post('/gaji/simpan', [GajiReviewController::class, 'simpan'])->name('gaji.simpan');
+
+    // Hapus Gaji
+    Route::delete('gaji', [GajiReviewController::class, 'hapus'])->name('gaji.hapus');
 });

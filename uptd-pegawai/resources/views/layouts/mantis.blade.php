@@ -120,7 +120,7 @@
     </script>
 
 
-
+    @yield('scripts')
 </body>
 <!-- [Body] end -->
 

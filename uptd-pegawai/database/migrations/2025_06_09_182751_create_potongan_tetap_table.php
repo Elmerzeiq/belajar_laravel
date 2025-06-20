@@ -11,7 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->string('nama_potongan');
             $table->enum('tipe', ['tetap', 'persen']);
-            $table->decimal('jumlah', 10, 2);
+            $table->string('jenis_potongan', 30)->default('total'); // ← tambah di sini
+            $table->decimal('jumlah', 15, 2);
             $table->timestamps();
         });
     }

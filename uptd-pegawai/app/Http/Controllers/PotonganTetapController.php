@@ -23,7 +23,8 @@ class PotonganTetapController extends Controller
         $request->validate([
             'nama_potongan' => 'required|string|max:100',
             'tipe' => 'required|in:tetap,persen',
-            'jumlah' => 'required|numeric|min:0'
+            'jumlah' => 'required|numeric|min:0',
+            'jenis_potongan' => 'required|in:gaji_pokok,insentif,total'
         ]);
 
         PotonganTetap::create($request->all());
@@ -41,7 +42,8 @@ class PotonganTetapController extends Controller
         $request->validate([
             'nama_potongan' => 'required|string|max:100',
             'tipe' => 'required|in:tetap,persen',
-            'jumlah' => 'required|numeric|min:0'
+            'jumlah' => 'required|numeric|min:0',
+            'jenis_potongan' => 'required|in:gaji_pokok,insentif,total'
         ]);
 
         $potongan_tetap->update($request->all());

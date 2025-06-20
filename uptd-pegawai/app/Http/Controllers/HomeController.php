@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pegawai;
 
 class HomeController extends Controller
 {
@@ -23,6 +24,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        // Jumlah semua pegawai (karena jika tidak aktif akan dihapus)
+        $jumlahPegawai = Pegawai::count();
+
+        // Jumlah pegawai yang belum diinput gajinya bulan ini
+        $bulan = date('m');
+        $tahun = date('Y');
+        $jumlahBelumGaji = Pegawai::whereDoesntHave('gaji', function($q) use ($bulan, $tahun) {
+                $q->where('bulan', $bulan)->where('tahun', $tahun);
+            })
+            ->count();
+
+        return view('home', [
+            'jumlahPegawai' => $jumlahPegawai,
+            'jumlahBelumGaji' => $jumlahBelumGaji,
+        ]);
     }
 }

@@ -11,5 +11,5 @@ class PotonganTetap extends Model
 
     protected $table = 'potongan_tetap'; // <= Tambahkan baris ini
 
-    protected $fillable = ['nama_potongan', 'tipe', 'jumlah'];
+    protected $fillable = ['nama_potongan', 'tipe', 'jumlah', 'jenis_potongan'];
 }
