@@ -12,36 +12,55 @@
             @method('PUT')
         @endif
 
+        {{-- Nama Potongan --}}
         <div class="mb-3">
-            <label class="form-label">Nama Potongan</label>
-            <input type="text" name="nama_potongan" class="form-control" required
-                value="{{ old('nama_potongan', $potongan_tetap->nama_potongan ?? '') }}">
+            <label for="nama_potongan" class="form-label @error('nama_potongan') text-danger @enderror">Nama Potongan</label>
+            <input type="text" name="nama_potongan" id="nama_potongan"
+                class="form-control @error('nama_potongan') is-invalid @enderror"
+                value="{{ old('nama_potongan', $potongan_tetap->nama_potongan ?? '') }}" autofocus>
+            @error('nama_potongan')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Jenis Potongan --}}
         <div class="mb-3">
-            <label class="form-label">Jenis Potongan</label>
-            <select name="jenis_potongan" class="form-select" required>
+            <label for="jenis_potongan" class="form-label">Jenis Potongan</label>
+            <select name="jenis_potongan" id="jenis_potongan" class="form-select @error('jenis_potongan') is-invalid @enderror">
                 <option value="gaji_pokok" {{ old('jenis_potongan', $potongan_tetap->jenis_potongan ?? '') == 'gaji_pokok' ? 'selected' : '' }}>Gaji Pokok</option>
                 <option value="insentif" {{ old('jenis_potongan', $potongan_tetap->jenis_potongan ?? '') == 'insentif' ? 'selected' : '' }}>Insentif</option>
                 <option value="total" {{ old('jenis_potongan', $potongan_tetap->jenis_potongan ?? '') == 'total' ? 'selected' : '' }}>Total (Gaji Pokok + Insentif)</option>
             </select>
+            @error('jenis_potongan')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Tipe Potongan --}}
         <div class="mb-3">
-            <label class="form-label">Tipe Potongan</label>
-            <select name="tipe" id="tipe-potongan" class="form-select" onchange="toggleTipePotongan(); toggleSatuan(this)" required>
+            <label for="tipe-potongan" class="form-label">Tipe Potongan</label>
+            <select name="tipe" id="tipe-potongan" class="form-select @error('tipe') is-invalid @enderror"
+                onchange="toggleTipePotongan(); toggleSatuan(this)">
                 <option value="tetap" {{ old('tipe', $potongan_tetap->tipe ?? '') == 'tetap' ? 'selected' : '' }}>Tetap (Rp)</option>
                 <option value="persen" {{ old('tipe', $potongan_tetap->tipe ?? '') == 'persen' ? 'selected' : '' }}>Persen (%)</option>
             </select>
+            @error('tipe')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
+        {{-- Jumlah Potongan --}}
         <div class="mb-3">
-            <label class="form-label">Jumlah Potongan</label>
+            <label for="jumlah" class="form-label @error('jumlah') text-danger @enderror">Jumlah Potongan</label>
             <div class="input-group">
                 <span class="input-group-text satuan">{{ old('tipe', $potongan_tetap->tipe ?? '') == 'persen' ? '%' : 'Rp' }}</span>
-                <input type="text" name="jumlah" id="jumlah" class="form-control" required autocomplete="off"
-                    value="{{ old('jumlah', $potongan_tetap->jumlah ?? '') }}">
+                <input type="text" name="jumlah" id="jumlah"
+                    class="form-control @error('jumlah') is-invalid @enderror"
+                    value="{{ old('jumlah', $potongan_tetap->jumlah ?? '') }}" autocomplete="off">
             </div>
+            @error('jumlah')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -60,7 +79,6 @@
         jumlahInput = document.getElementById('jumlah');
         toggleTipePotongan();
 
-        // Validasi input maksimum 100 jika persen
         jumlahInput.addEventListener('input', function () {
             const tipe = document.getElementById('tipe-potongan').value;
             if (tipe === 'persen') {

@@ -21,10 +21,15 @@ class PotonganTetapController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_potongan' => 'required|string|max:100',
-            'tipe' => 'required|in:tetap,persen',
-            'jumlah' => 'required|numeric|min:0',
-            'jenis_potongan' => 'required|in:gaji_pokok,insentif,total'
+            'nama_potongan'   => 'required|string|max:100',
+            'tipe'            => 'required|in:tetap,persen',
+            'jumlah'          => 'required|numeric|min:0',
+            'jenis_potongan'  => 'required|in:gaji_pokok,insentif,total',
+        ], [
+            'nama_potongan.required'   => 'Nama Potongan wajib diisi.',
+            'jumlah.numeric'           => 'Jumlah Potongan harus berupa angka.',
+            'tipe.required'            => 'Tipe Potongan wajib dipilih.',
+            'jenis_potongan.required'  => 'Jenis Potongan wajib dipilih.',
         ]);
 
         PotonganTetap::create($request->all());
@@ -40,10 +45,15 @@ class PotonganTetapController extends Controller
     public function update(Request $request, PotonganTetap $potongan_tetap)
     {
         $request->validate([
-            'nama_potongan' => 'required|string|max:100',
-            'tipe' => 'required|in:tetap,persen',
-            'jumlah' => 'required|numeric|min:0',
-            'jenis_potongan' => 'required|in:gaji_pokok,insentif,total'
+            'nama_potongan'   => 'required|string|max:100',
+            'tipe'            => 'required|in:tetap,persen',
+            'jumlah'          => 'required|numeric|min:0',
+            'jenis_potongan'  => 'required|in:gaji_pokok,insentif,total',
+        ], [
+            'nama_potongan.required'   => 'Nama Potongan wajib diisi.',
+            'jumlah.numeric'           => 'Jumlah Potongan harus berupa angka.',
+            'tipe.required'            => 'Tipe Potongan wajib dipilih.',
+            'jenis_potongan.required'  => 'Jenis Potongan wajib dipilih.',
         ]);
 
         $potongan_tetap->update($request->all());

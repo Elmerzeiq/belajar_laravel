@@ -60,14 +60,14 @@
               <label class="form-label">Email Address</label>
               <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Email Address">
               @error('email')
-              <small class="text-danger">{{ $message }}</small>">
+              <small class="text-danger">{{ $message }}</small>
               @enderror
             </div>
             <div class="form-group mb-3">
               <label class="form-label">Password</label>
               <input type="password" name="password" class="form-control @error('email') is-invalid @enderror" placeholder="Password">
               @error('password')
-              <small class="text-danger">{{ $message }}</small>">
+              <small class="text-danger">{{ $message }}</small>
               @enderror
             </div>
             <div class="d-flex mt-1 justify-content-between">
