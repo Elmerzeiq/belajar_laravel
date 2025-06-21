@@ -8,6 +8,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\GajiReviewController;
 use App\Http\Controllers\PotonganTetapController;
 use App\Http\Controllers\AbsenImportController;
+use App\Http\Controllers\PayrollController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -46,4 +47,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Hapus Gaji
     Route::delete('gaji', [GajiReviewController::class, 'hapus'])->name('gaji.hapus');
+
+    //payroll pdf
+    Route::get('/gaji/{id}/slip-pdf', [PayrollController::class, 'slip'])->name('gaji.slipPdf');
 });

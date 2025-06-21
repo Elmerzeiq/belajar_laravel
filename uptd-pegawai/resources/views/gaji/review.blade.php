@@ -56,6 +56,8 @@
                                    class="form-control potongan-tetap-input"
                                    value="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
                                    data-default="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
+                                   data-tipe="{{ $item->tipe }}"
+                                   data-jenis="{{ $item->jenis_potongan }}"
                                    required>
                         </div>
                     </div>
@@ -189,18 +191,53 @@
 
                 // Potongan insentif hasil import
                 let potonganPersenImport = parseFloat(document.getElementById('potongan_insentif_import').value.replace(',', '.')) || 0;
-                let insentifSetelahPotongan = insentif - (insentif * potonganPersenImport / 100);
+                let insentifSetelahPotonganImport = insentif - (insentif * potonganPersenImport / 100);
 
                 let potonganLain = getNumericValue(fields[2]);
                 let bonus = getNumericValue(fields[3]);
-                let totalPotonganTetap = 0;
+
+                // Inisialisasi akumulasi potongan
+                let potonganGaji = 0;
+                let potonganInsentif = 0;
+                let potonganTotal = 0;
+                let totalPersenPotonganTotal = [];
+
                 document.querySelectorAll('.potongan-tetap-input').forEach((input, i) => {
                     if (!input.disabled) {
-                        totalPotonganTetap += potonganInputs[i].getNumber();
+                        let nilai = potonganInputs[i].getNumber();
+                        let tipe = input.getAttribute('data-tipe');
+                        let jenis = input.getAttribute('data-jenis');
+                        if (tipe === 'persen') {
+                            if (jenis === 'gaji_pokok') {
+                                potonganGaji += gajiPokok * nilai / 100;
+                            } else if (jenis === 'insentif') {
+                                potonganInsentif += insentif * nilai / 100;
+                            } else if (jenis === 'total') {
+                                totalPersenPotonganTotal.push(nilai);
+                            }
+                        } else {
+                            if (jenis === 'gaji_pokok') {
+                                potonganGaji += nilai;
+                            } else if (jenis === 'insentif') {
+                                potonganInsentif += nilai;
+                            } else if (jenis === 'total') {
+                                potonganTotal += nilai;
+                            }
+                        }
                     }
                 });
 
-                let total = (gajiPokok + insentifSetelahPotongan + bonus) - (totalPotonganTetap + potonganLain);
+                // Gaji dan insentif setelah potongan masing-masing
+                let gajiSetelahPotongan = gajiPokok - potonganGaji;
+                let insentifSetelahPotongan = insentifSetelahPotonganImport - potonganInsentif;
+
+                // Potongan total (persen): dihitung setelah potongan gaji dan insentif
+                let totalSementara = gajiSetelahPotongan + insentifSetelahPotongan;
+                totalPersenPotonganTotal.forEach(nilai => {
+                    potonganTotal += totalSementara * nilai / 100;
+                });
+
+                let total = gajiSetelahPotongan + insentifSetelahPotongan + bonus - potonganTotal - potonganLain;
                 if (total < 0) total = 0;
 
                 document.getElementById('total_gaji_display').textContent =
