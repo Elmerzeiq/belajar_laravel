@@ -88,7 +88,7 @@
                         required>
                 </div>
                 <div class="col-md-6">
-                    <label for="insentif_import" class="form-label">Nominal Insentif Import</label>
+                    <label for="insentif_import" class="form-label">Nominal Potongan Insentif Import</label>
                     <input type="text"
                         name="insentif_import"
                         id="insentif_import"

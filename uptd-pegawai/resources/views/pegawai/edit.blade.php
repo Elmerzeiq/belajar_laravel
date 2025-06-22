@@ -101,7 +101,7 @@
             minimumValue: '0',
             maximumValue: '9999999999',
             modifyValueOnWheel: false,
-        };s
+        };
 
         // Inisialisasi AutoNumeric
         const gaji = new AutoNumeric('#gaji_pokok', options);
