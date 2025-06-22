@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class AbsenImportController extends Controller
 {
-    // Fungsi konversi excel time ke format jam:menit
+    // Konversi dari nilai Excel Time ke format H:i
     private function excelTimeToHM($excelTime)
     {
         if (is_null($excelTime) || $excelTime === '') return null;
@@ -21,7 +21,7 @@ class AbsenImportController extends Controller
         return sprintf('%02d:%02d', $hours, $minutes);
     }
 
-    // Fungsi hitung potongan persen maksimal 1.5% per jenis pelanggaran
+    // Hitung potongan maksimal 1.5%
     private function hitungPotonganTerpisah($menit)
     {
         return match (true) {
@@ -42,11 +42,10 @@ class AbsenImportController extends Controller
         ]);
 
         $insentif = $request->insentif;
-
         $data = Excel::toArray([], $request->file('file_absen')->getRealPath());
         $sheet = $data[0];
 
-        // Cari header baris
+        // Temukan header
         $header = null;
         $headerIndex = null;
         foreach ($sheet as $index => $row) {
@@ -61,11 +60,9 @@ class AbsenImportController extends Controller
             return back()->with('error', 'Header kolom tidak ditemukan. Pastikan format file Excel sesuai.');
         }
 
-        $wantedCols = [
-            'Tanggal', 'Jam Masuk', 'Jam Pulang', 'Scan Masuk', 'Scan Keluar'
-        ];
-
+        $wantedCols = ['Tanggal', 'Jam Masuk', 'Jam Pulang', 'Scan Masuk', 'Scan Keluar'];
         $colIndexes = [];
+
         foreach ($wantedCols as $wanted) {
             foreach ($header as $i => $colName) {
                 if (strcasecmp(trim($colName), $wanted) == 0) {
@@ -87,11 +84,8 @@ class AbsenImportController extends Controller
             $tanggal = $row[$colIndexes['Tanggal']] ?? null;
             $jam_masuk = $row[$colIndexes['Jam Masuk']] ?? null;
             $jam_pulang = $row[$colIndexes['Jam Pulang']] ?? null;
-            $scan_masuk = $row[$colIndexes['Scan Masuk']] ?? null;
-            $scan_keluar = $row[$colIndexes['Scan Keluar']] ?? null;
-
-            $scan_masuk = $this->excelTimeToHM($scan_masuk);
-            $scan_keluar = $this->excelTimeToHM($scan_keluar);
+            $scan_masuk = $this->excelTimeToHM($row[$colIndexes['Scan Masuk']] ?? null);
+            $scan_keluar = $this->excelTimeToHM($row[$colIndexes['Scan Keluar']] ?? null);
 
             if (empty($tanggal) || empty($jam_masuk) || empty($jam_pulang)) continue;
 
@@ -108,38 +102,46 @@ class AbsenImportController extends Controller
 
             $hari = $tanggalObj->locale('id')->isoFormat('dddd');
             $waktu_masuk_normal = $tanggalObj->copy()->setTime(7, 30, 0);
-            $waktu_pulang_normal = (strtolower($hari) == 'jumat' || strtolower($hari) == 'friday') ?
-                $tanggalObj->copy()->setTime(16, 30, 0) :
-                $tanggalObj->copy()->setTime(16, 0, 0);
+            $waktu_pulang_normal = in_array(strtolower($hari), ['jumat', 'friday'])
+                ? $tanggalObj->copy()->setTime(16, 30, 0)
+                : $tanggalObj->copy()->setTime(16, 0, 0);
 
             try {
                 $waktu_masuk_aktual = $scan_masuk ? Carbon::createFromFormat('H:i', $scan_masuk)->setDateFrom($tanggalObj) : null;
             } catch (\Exception $e) {
-                \Log::error("Gagal parsing scan masuk: $scan_masuk");
                 $waktu_masuk_aktual = null;
             }
 
             try {
                 $waktu_pulang_aktual = $scan_keluar ? Carbon::createFromFormat('H:i', $scan_keluar)->setDateFrom($tanggalObj) : null;
             } catch (\Exception $e) {
-                \Log::error("Gagal parsing scan keluar: $scan_keluar");
                 $waktu_pulang_aktual = null;
             }
 
             $terlambat_menit = 0;
-            if ($waktu_masuk_aktual && $waktu_masuk_normal && $waktu_masuk_aktual->gt($waktu_masuk_normal)) {
-                $terlambat_menit = $waktu_masuk_normal->diffInMinutes($waktu_masuk_aktual);
-            }
-
             $pulang_cepat_menit = 0;
-            if ($waktu_pulang_aktual && $waktu_pulang_normal && $waktu_pulang_aktual->lt($waktu_pulang_normal)) {
-                $pulang_cepat_menit = abs($waktu_pulang_normal->diffInMinutes($waktu_pulang_aktual, false));
-            }
+            $potongan_terlambat = 0;
+            $potongan_pulang_cepat = 0;
+            $potongan_persen = 0;
+            $tidak_hadir = false;
 
-            // Hitung potongan terpisah
-            $potongan_terlambat = $this->hitungPotonganTerpisah($terlambat_menit);
-            $potongan_pulang_cepat = $this->hitungPotonganTerpisah($pulang_cepat_menit);
-            $potongan_persen = $potongan_terlambat + $potongan_pulang_cepat;
+            // Jika tidak ada scan masuk & keluar
+            if (empty($scan_masuk) && empty($scan_keluar)) {
+                $potongan_persen = 3.0;
+                $tidak_hadir = true;
+            } else {
+                if ($waktu_masuk_aktual && $waktu_masuk_aktual->gt($waktu_masuk_normal)) {
+                    $terlambat_menit = $waktu_masuk_normal->diffInMinutes($waktu_masuk_aktual);
+                    $potongan_terlambat = $this->hitungPotonganTerpisah($terlambat_menit);
+                }
+
+                if ($waktu_pulang_aktual && $waktu_pulang_aktual->lt($waktu_pulang_normal)) {
+                    $pulang_cepat_menit = abs($waktu_pulang_normal->diffInMinutes($waktu_pulang_aktual, false));
+                    $potongan_pulang_cepat = $this->hitungPotonganTerpisah($pulang_cepat_menit);
+                }
+
+                $potongan_persen = $potongan_terlambat + $potongan_pulang_cepat;
+            }
 
             $total_potongan_persen += $potongan_persen;
 
@@ -155,6 +157,7 @@ class AbsenImportController extends Controller
                 'potongan_terlambat' => $potongan_terlambat,
                 'potongan_pulang_cepat' => $potongan_pulang_cepat,
                 'potongan_persen' => $potongan_persen,
+                'tidak_hadir' => $tidak_hadir,
             ];
         }
 
@@ -176,20 +179,13 @@ class AbsenImportController extends Controller
 
     public function preview()
     {
-        $rows = session('rows');
-        $pegawai_id = session('pegawai_id');
-        $bulan = session('bulan');
-        $tahun = session('tahun');
-        $insentif = session('insentif');
-        $total_potongan_persen = session('total_potongan_persen');
-
-        return view('gaji.gaji_preview', compact(
-            'rows',
-            'pegawai_id',
-            'bulan',
-            'tahun',
-            'insentif',
-            'total_potongan_persen'
-        ));
+        return view('gaji.gaji_preview', [
+            'rows' => session('rows'),
+            'pegawai_id' => session('pegawai_id'),
+            'bulan' => session('bulan'),
+            'tahun' => session('tahun'),
+            'insentif' => session('insentif'),
+            'total_potongan_persen' => session('total_potongan_persen'),
+        ]);
     }
 }
