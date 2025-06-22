@@ -20,7 +20,7 @@ class PegawaiController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required|string',
             'nip' => 'required|numeric',
             'jabatan' => 'required|string',
@@ -36,19 +36,47 @@ class PegawaiController extends Controller
             'insentif_kotor.numeric' => 'Insentif Kotor harus berupa angka.',
         ]);
 
-        Pegawai::create($request->all());
+        // Tangani AutoNumeric input (jika kosong bisa terkirim sebagai "" atau dengan titik pemisah ribuan)
+        $validated['gaji_pokok'] = str_replace('.', '', $validated['gaji_pokok']) ?: 0;
+        $validated['insentif_kotor'] = str_replace('.', '', $validated['insentif_kotor']) ?: 0;
+
+        Pegawai::create($validated);
+
         return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil disimpan.');
     }
+
     public function edit(String $id)
     {
         $pegawai = Pegawai::findOrFail($id);
         return view('pegawai.edit', compact('pegawai'));
     }
+
     public function update(Request $request, Pegawai $pegawai)
     {
-        $pegawai->update($request->all());
+        $validated = $request->validate([
+            'nama' => 'required|string',
+            'nip' => 'required|numeric',
+            'jabatan' => 'required|string',
+            'gaji_pokok' => 'required|numeric',
+            'insentif_kotor' => 'required|numeric',
+        ], [
+            'nama.required' => 'Nama Pegawai harus diisi.',
+            'nip.required' => 'NIP harus diisi.',
+            'jabatan.required' => 'Jabatan harus diisi.',
+            'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
+            'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
+            'gaji_pokok.numeric' => 'Gaji Pokok harus berupa angka.',
+            'insentif_kotor.numeric' => 'Insentif Kotor harus berupa angka.',
+        ]);
+
+        $validated['gaji_pokok'] = str_replace('.', '', $validated['gaji_pokok']) ?: 0;
+        $validated['insentif_kotor'] = str_replace('.', '', $validated['insentif_kotor']) ?: 0;
+
+        $pegawai->update($validated);
+
         return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil diperbarui.');
     }
+
     public function destroy(String $id)
     {
         Pegawai::destroy($id);
