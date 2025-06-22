@@ -29,9 +29,7 @@ class AbsenImportController extends Controller
             $menit <= 30 => 0.5,
             $menit <= 60 => 1,
             $menit <= 90 => 1.5,
-            $menit <= 120 => 2,
-            $menit <= 150 => 2.5,
-            default => 3,
+            default => 2,
         };
     }
 
@@ -130,11 +128,11 @@ class AbsenImportController extends Controller
             }
 
             // Terlambat: scan masuk > jam masuk normal
+
             $terlambat_menit = 0;
             if ($waktu_masuk_aktual && $waktu_masuk_normal && $waktu_masuk_aktual->gt($waktu_masuk_normal)) {
                 $terlambat_menit = $waktu_masuk_normal->diffInMinutes($waktu_masuk_aktual);
             }
-
             // Pulang cepat: scan keluar < jam pulang normal
             $pulang_cepat_menit = 0;
             if ($waktu_pulang_aktual && $waktu_pulang_normal && $waktu_pulang_aktual->lt($waktu_pulang_normal)) {
@@ -142,11 +140,11 @@ class AbsenImportController extends Controller
                 $pulang_cepat_menit = abs($waktu_pulang_normal->diffInMinutes($waktu_pulang_aktual, false));
             }
 
-            // Hitung potongan masing-masing, lalu jumlahkan
-            $potongan_terlambat = $this->hitungPotongan($terlambat_menit);
-            $potongan_pulang_cepat = $this->hitungPotongan($pulang_cepat_menit);
-            $potongan_persen = $potongan_terlambat + $potongan_pulang_cepat;
+            // Gabungkan menit keterlambatan dan pulang cepat
+            $total_menit = $terlambat_menit + $pulang_cepat_menit;
 
+            // Hitung potongan hanya sekali untuk total menit (maksimal 2%)
+            $potongan_persen = $this->hitungPotongan($total_menit);
             $total_potongan_persen += $potongan_persen;
 
             $rows[] = [
