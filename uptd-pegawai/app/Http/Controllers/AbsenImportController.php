@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class AbsenImportController extends Controller
 {
-    // Fungsi konversi excel time ke string jam:menit
+    // Fungsi konversi excel time ke format jam:menit
     private function excelTimeToHM($excelTime)
     {
         if (is_null($excelTime) || $excelTime === '') return null;
@@ -21,17 +21,14 @@ class AbsenImportController extends Controller
         return sprintf('%02d:%02d', $hours, $minutes);
     }
 
-    // Fungsi hitung potongan persen per pelanggaran
-    private function hitungPotongan($menit)
+    // Fungsi hitung potongan persen maksimal 1.5% per jenis pelanggaran
+    private function hitungPotonganTerpisah($menit)
     {
         return match (true) {
             $menit == 0 => 0,
             $menit <= 30 => 0.5,
             $menit <= 60 => 1,
-            $menit <= 90 => 1.5,
-            $menit <= 120 => 2,
-            $menit <= 150 => 2.5,
-            default => 3,
+            default => 1.5,
         };
     }
 
@@ -49,6 +46,7 @@ class AbsenImportController extends Controller
         $data = Excel::toArray([], $request->file('file_absen')->getRealPath());
         $sheet = $data[0];
 
+        // Cari header baris
         $header = null;
         $headerIndex = null;
         foreach ($sheet as $index => $row) {
@@ -82,7 +80,6 @@ class AbsenImportController extends Controller
         }
 
         $dataRows = array_slice($sheet, $headerIndex + 1);
-
         $rows = [];
         $total_potongan_persen = 0.0;
 
@@ -129,24 +126,21 @@ class AbsenImportController extends Controller
                 $waktu_pulang_aktual = null;
             }
 
-            // Terlambat: scan masuk > jam masuk normal
-
             $terlambat_menit = 0;
             if ($waktu_masuk_aktual && $waktu_masuk_normal && $waktu_masuk_aktual->gt($waktu_masuk_normal)) {
                 $terlambat_menit = $waktu_masuk_normal->diffInMinutes($waktu_masuk_aktual);
             }
-            // Pulang cepat: scan keluar < jam pulang normal
+
             $pulang_cepat_menit = 0;
             if ($waktu_pulang_aktual && $waktu_pulang_normal && $waktu_pulang_aktual->lt($waktu_pulang_normal)) {
-                // Perbaikan: ABS agar tidak pernah minus
                 $pulang_cepat_menit = abs($waktu_pulang_normal->diffInMinutes($waktu_pulang_aktual, false));
             }
 
-            // Gabungkan menit keterlambatan dan pulang cepat
-            $total_menit = $terlambat_menit + $pulang_cepat_menit;
+            // Hitung potongan terpisah
+            $potongan_terlambat = $this->hitungPotonganTerpisah($terlambat_menit);
+            $potongan_pulang_cepat = $this->hitungPotonganTerpisah($pulang_cepat_menit);
+            $potongan_persen = $potongan_terlambat + $potongan_pulang_cepat;
 
-            // Hitung potongan hanya sekali untuk total menit (maksimal 2%)
-            $potongan_persen = $this->hitungPotongan($total_menit);
             $total_potongan_persen += $potongan_persen;
 
             $rows[] = [
@@ -158,6 +152,8 @@ class AbsenImportController extends Controller
                 'scan_keluar' => $scan_keluar,
                 'terlambat_menit' => $terlambat_menit,
                 'pulang_cepat_menit' => $pulang_cepat_menit,
+                'potongan_terlambat' => $potongan_terlambat,
+                'potongan_pulang_cepat' => $potongan_pulang_cepat,
                 'potongan_persen' => $potongan_persen,
             ];
         }
@@ -187,6 +183,13 @@ class AbsenImportController extends Controller
         $insentif = session('insentif');
         $total_potongan_persen = session('total_potongan_persen');
 
-        return view('gaji.gaji_preview', compact('rows', 'pegawai_id', 'bulan', 'tahun', 'insentif', 'total_potongan_persen'));
+        return view('gaji.gaji_preview', compact(
+            'rows',
+            'pegawai_id',
+            'bulan',
+            'tahun',
+            'insentif',
+            'total_potongan_persen'
+        ));
     }
 }
