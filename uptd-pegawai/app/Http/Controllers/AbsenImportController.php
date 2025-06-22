@@ -29,7 +29,9 @@ class AbsenImportController extends Controller
             $menit <= 30 => 0.5,
             $menit <= 60 => 1,
             $menit <= 90 => 1.5,
-            default => 2,
+            $menit <= 120 => 2,
+            $menit <= 150 => 2.5,
+            default => 3,
         };
     }
 
