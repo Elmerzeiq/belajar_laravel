@@ -37,7 +37,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gaji/preview/{pegawai_id}/{bulan}/{tahun}', [AbsenImportController::class, 'preview'])->name('gaji.preview');
 
     // Preview → Review (POST dari preview ke review)
-    Route::post('/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
+   //Route::post('/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
+   // Route::any('/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
+    Route::match(['get', 'post'], '/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
+
 
     // (Opsional) Import Absensi, jika ada tombol import absensi manual
     Route::post('gaji/import-absensi', [GajiReviewController::class, 'importAbsensi'])->name('gaji.importAbsensi');
