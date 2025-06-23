@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\PegawaiController;
-use App\Http\Controllers\AbsensiController;
+//use App\Http\Controllers\AbsensiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\GajiController;
@@ -21,7 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('pegawai', PegawaiController::class);
 
     // Route untuk rekap potongan gaji
-    Route::get('rekap/gaji', [AbsensiController::class, 'rekapPotongan'])->name('rekap.gaji');
+   // Route::get('rekap/gaji', [AbsensiController::class, 'rekapPotongan'])->name('rekap.gaji');
 
     // Halaman utama setelah login
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
