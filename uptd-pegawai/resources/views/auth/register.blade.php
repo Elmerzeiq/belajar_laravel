@@ -85,6 +85,18 @@
                   <input id="password-confirm" type="password" class="form-control"
                     name="password_confirmation" required autocomplete="new-password">
                 </div>
+                <div class="form-group mb-3">
+                  <label for="role" class="form-label">Role</label>
+                  <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" required>
+                      <option value="">-- Pilih Role --</option>
+                      <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                      <option value="Pembantu Bendahara" {{ old('role') == 'Pembantu Bendahara' ? 'selected' : '' }}>Pembantu Bendahara</option>
+                      <option value="Bendahara Kepala" {{ old('role') == 'Bendahara Kepala' ? 'selected' : '' }}>Bendahara Kepala</option>
+                  </select>
+                  @error('role')
+                    <small class="text-danger">{{ $message }}</small>
+                  @enderror
+                </div>
                 <div class="d-grid mt-4">
                   <button type="submit" class="btn btn-primary">Register</button>
                 </div>

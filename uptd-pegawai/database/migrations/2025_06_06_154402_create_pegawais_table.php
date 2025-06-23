@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('jabatan');
             $table->integer('gaji_pokok');
             $table->integer('insentif_kotor');
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
     }

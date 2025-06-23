@@ -13,11 +13,6 @@
         </a>
     </div>
 
-    {{-- Tampilkan alert jika tidak ada data --}}
-    @if($pegawai->isEmpty())
-        <div class="alert alert-info">Tidak ada data pegawai.</div>
-    @endif
-
     {{-- Table --}}
     <div class="card shadow-sm">
         <div class="card-body">
@@ -25,6 +20,7 @@
                 <table class="table table-bordered table-striped" id="datatable">
                     <thead class="table-light">
                         <tr>
+                            <th>Foto</th>
                             <th>No.</th>
                             <th>Nama</th>
                             <th>NIP</th>
@@ -35,8 +31,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($pegawai as $index => $item)
+                        @forelse ($pegawai as $index => $item)
                         <tr>
+                            <td>
+                                @if($item->foto)
+                                    <img src="{{ asset('foto_pegawai/'.$item->foto) }}" alt="Foto Pegawai" style="max-width: 55px; max-height: 55px; border-radius: 6px;">
+                                @else
+                                    <img src="{{ asset('img/nouser.jpg') }}" alt="Default Foto" style="max-width: 55px; max-height: 55px; border-radius: 6px;">
+                                @endif
+                            </td>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->nama }}</td>
                             <td>{{ $item->nip }}</td>
@@ -56,7 +59,11 @@
                                 </form>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center">Tidak ada data pegawai.</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

@@ -7,7 +7,7 @@
         <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
 
-    <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengubah pegawai ini?')" id="pegawai-form">
+    <form action="{{ route('pegawai.update', $pegawai->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengubah pegawai ini?')" id="pegawai-form" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -80,6 +80,26 @@
             @error('insentif_kotor')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="foto" class="form-label @error('foto') text-danger @enderror">Foto (opsional)</label>
+            <input
+                type="file"
+                name="foto"
+                id="foto"
+                class="form-control @error('foto') is-invalid @enderror"
+                accept="image/*"
+            >
+            @error('foto')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            @if($pegawai->foto)
+                <div class="mt-2">
+                    <img src="{{ asset('foto_pegawai/'.$pegawai->foto) }}" alt="Foto Pegawai" style="max-height: 120px;">
+                    <div class="small text-muted">Foto saat ini</div>
+                </div>
+            @endif
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan</button>

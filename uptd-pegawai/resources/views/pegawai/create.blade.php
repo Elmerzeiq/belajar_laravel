@@ -7,7 +7,7 @@
         <a href="{{ route('pegawai.index') }}" class="btn btn-secondary">Kembali</a>
     </div>
 
-    <form action="{{ route('pegawai.store') }}" method="POST" id="pegawai-form">
+    <form action="{{ route('pegawai.store') }}" method="POST" id="pegawai-form" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -79,6 +79,20 @@
                 value="{{ old('insentif_kotor') }}"
             >
             @error('insentif_kotor')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label for="foto" class="form-label @error('foto') text-danger @enderror">Foto (opsional)</label>
+            <input
+                type="file"
+                name="foto"
+                id="foto"
+                class="form-control @error('foto') is-invalid @enderror"
+                accept="image/*"
+            >
+            @error('foto')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>

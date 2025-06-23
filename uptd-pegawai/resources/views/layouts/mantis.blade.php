@@ -69,6 +69,7 @@
                     null, // Jabatan
                     null, // Gaji Pokok
                     null, // Insentif Kotor
+                    null, // Foto
                     null // Aksi (disable sort kalau mau)
                 ]
             });
