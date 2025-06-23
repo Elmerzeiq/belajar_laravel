@@ -10,11 +10,28 @@
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar" style="width: 100%;">
+                {{-- Semua role bisa Home --}}
                 <x-sidebar.links title="Home" route="home" icon="ti ti-home"></x-sidebar.links>
-                <x-sidebar.links title="Data Pegawai" route="pegawai.index" icon="ti ti-users"></x-sidebar.links>
-                <x-sidebar.links title="Potongan Tetap" route="potongan-tetap.index" icon="ti ti-credit-card-off"></x-sidebar.links>
-                <x-sidebar.links title="Gaji" route="gaji.index" icon="ti ti-wallet"></x-sidebar.links>
-                <x-sidebar.links title="Laporan Gaji" route="laporan.gaji" icon="ti ti-report" />
+
+                {{-- Admin & Pembantu Bendahara: Data Pegawai --}}
+                @if (in_array(auth()->user()->role, ['admin', 'Pembantu Bendahara']))
+                    <x-sidebar.links title="Data Pegawai" route="pegawai.index" icon="ti ti-users"></x-sidebar.links>
+                @endif
+
+                {{-- Admin & Pembantu Bendahara: Potongan Tetap --}}
+                @if (in_array(auth()->user()->role, ['admin', 'Pembantu Bendahara']))
+                    <x-sidebar.links title="Potongan Tetap" route="potongan-tetap.index" icon="ti ti-credit-card-off"></x-sidebar.links>
+                @endif
+
+                {{-- Admin & Pembantu Bendahara: Gaji --}}
+                @if (in_array(auth()->user()->role, ['admin', 'Pembantu Bendahara']))
+                    <x-sidebar.links title="Gaji" route="gaji.index" icon="ti ti-wallet"></x-sidebar.links>
+                @endif
+
+                {{-- Admin & Bendahara Kepala: Laporan Gaji --}}
+                @if (in_array(auth()->user()->role, ['admin', 'Bendahara Kepala']))
+                    <x-sidebar.links title="Laporan Gaji" route="laporan.gaji" icon="ti ti-report"></x-sidebar.links>
+                @endif
             </ul>
         </div>
     </div>
