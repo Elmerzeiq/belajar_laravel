@@ -83,7 +83,6 @@
                 <th style="width:40px; text-align:center;">No</th>
                 <th>Nama Pegawai</th>
                 <th>NIP</th>
-                <th>Pangkat/Golongan</th>
                 <th>Jabatan</th>
                 <th style="text-align:right;">Total Gaji</th>
             </tr>
@@ -94,20 +93,14 @@
                     <td style="text-align:center;">{{ $index+1 }}</td>
                     <td>{{ $gaji->pegawai->nama ?? '-' }}</td>
                     <td>{{ $gaji->pegawai->nip ?? '-' }}</td>
-                    <td>{{ $gaji->pegawai->pangkat ?? '-' }}</td>
                     <td>{{ $gaji->pegawai->jabatan ?? '-' }}</td>
                     <td style="text-align:right;">
-                        {{ number_format(
-                            $gaji->gaji_total
-                            ?? $gaji->total_gaji
-                            ?? $gaji->jumlah_gaji
-                            ?? 0,
-                        0, ',', '.') }}
+                        {{ number_format($gaji->gaji_bersih ?? 0, 0, ',', '.') }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" style="text-align:center;">Tidak ada data gaji pada periode ini.</td>
+                    <td colspan="5" style="text-align:center;">Tidak ada data gaji pada periode ini.</td>
                 </tr>
             @endforelse
         </tbody>
