@@ -16,6 +16,7 @@
         {{-- <x-sidebar.links title="Absensi" route="absensi.import" icon="ti ti-user-check"></x-sidebar.links> --}}
         {{-- <x-sidebar.links title="Rekap Absensi" route="rekap.gaji" icon="ti ti-clipboard"></x-sidebar.links> --}}
         <x-sidebar.links title="Gaji" route="gaji.index" icon="ti ti-wallet"></x-sidebar.links>
+        <x-sidebar.links title="Laporan Gaji" route="laporan.gaji" icon="ti ti-report" />
           </ul>
         </li>
     </div>

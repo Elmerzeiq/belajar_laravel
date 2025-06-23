@@ -55,5 +55,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/gaji/{id}/slip-pdf', [PayrollController::class, 'slip'])->name('gaji.slipPdf');
 
     // Untuk tombol Print per pegawai, bulan, tahun
-Route::get('/gaji/{pegawai_id}/{bulan}/{tahun}/payroll_pdf', [PayrollController::class, 'payrollPdf'])->name('gaji.payroll_pdf');
+    Route::get('/gaji/{pegawai_id}/{bulan}/{tahun}/payroll_pdf', [PayrollController::class, 'payrollPdf'])->name('gaji.payroll_pdf');
+
+    //laporan
+    Route::get('/laporan-gaji', [\App\Http\Controllers\LaporanGajiController::class, 'index'])->name('laporan.gaji');
+
+    //print laporan gaji
+    Route::get('/laporan-gaji/print', [\App\Http\Controllers\LaporanGajiController::class, 'print'])->name('laporan.gaji.print');
 });
