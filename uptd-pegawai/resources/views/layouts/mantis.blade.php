@@ -6,11 +6,11 @@
     <title>Aplikasi Penggajian</title>
     <!-- [Meta] -->
     <x-meta></x-meta>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <!-- [Head] end -->
 <!-- [Body] Start -->
-
+@stack('scripts')
 <body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
     <!-- [ Pre-loader ] start -->
     <div class="loader-bg">

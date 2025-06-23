@@ -13,6 +13,18 @@
         </a>
     </div>
 
+    {{-- Alert jika data kosong --}}
+    @if ($pegawai->count() == 0)
+        <div class="alert alert-warning text-center">
+            Tidak ada data pegawai.
+        </div>
+    @endif
+
+    {{-- alert jika menghapus data pegawai yang masih ada data gajinya--}}
+    @if (session('error'))
+    <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+
     {{-- Table --}}
     <div class="card shadow-sm">
         <div class="card-body">
@@ -31,7 +43,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($pegawai as $index => $item)
+                        @foreach ($pegawai as $index => $item)
                         <tr>
                             <td>
                                 @if($item->foto)
@@ -59,11 +71,7 @@
                                 </form>
                             </td>
                         </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="text-center">Tidak ada data pegawai.</td>
-                        </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>

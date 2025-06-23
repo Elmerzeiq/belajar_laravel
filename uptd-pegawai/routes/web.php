@@ -9,6 +9,7 @@ use App\Http\Controllers\GajiReviewController;
 use App\Http\Controllers\PotonganTetapController;
 use App\Http\Controllers\AbsenImportController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
     return view('auth.login');
@@ -41,7 +42,6 @@ Route::middleware(['auth'])->group(function () {
    // Route::any('/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
     Route::match(['get', 'post'], '/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
 
-
     // (Opsional) Import Absensi, jika ada tombol import absensi manual
     Route::post('gaji/import-absensi', [GajiReviewController::class, 'importAbsensi'])->name('gaji.importAbsensi');
 
@@ -62,4 +62,9 @@ Route::middleware(['auth'])->group(function () {
 
     //print laporan gaji
     Route::get('/laporan-gaji/print', [\App\Http\Controllers\LaporanGajiController::class, 'print'])->name('laporan.gaji.print');
+
+    // Profil user
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
 });

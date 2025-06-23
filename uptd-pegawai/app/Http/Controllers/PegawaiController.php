@@ -109,12 +109,21 @@ class PegawaiController extends Controller
     {
         $pegawai = Pegawai::findOrFail($id);
 
-        // Hapus foto jika ada
-        if ($pegawai->foto && file_exists(public_path('foto_pegawai/' . $pegawai->foto))) {
-            @unlink(public_path('foto_pegawai/' . $pegawai->foto));
-        }
+        try {
+            $pegawai->delete();
 
-        $pegawai->delete();
-        return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil dihapus.');
+            // Hapus foto hanya jika delete berhasil
+            if ($pegawai->foto && file_exists(public_path('foto_pegawai/' . $pegawai->foto))) {
+                @unlink(public_path('foto_pegawai/' . $pegawai->foto));
+            }
+
+            return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil dihapus.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->errorInfo[1] == 1451) {
+                // Foreign key constraint violation
+                return redirect()->route('pegawai.index')->with('error', 'Data pegawai tidak bisa dihapus karena masih memiliki data gaji. Silakan hapus data gaji terlebih dahulu.');
+            }
+            return redirect()->route('pegawai.index')->with('error', 'Terjadi kesalahan saat menghapus data pegawai.');
+        }
     }
 }

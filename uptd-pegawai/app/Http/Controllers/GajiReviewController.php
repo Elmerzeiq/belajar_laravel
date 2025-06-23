@@ -108,7 +108,7 @@ class GajiReviewController extends Controller
             'gaji_pokok' => 'required',
             'insentif_tetap' => 'required',
             'potongan_tetap' => 'array',
-            'potongan_tetap.*' => 'required',
+            'potongan_tetap.*' => 'nullable',
             'potongan_insentif_import' => 'nullable',
             'insentif_import' => 'nullable',
             'potongan_lain' => 'nullable',

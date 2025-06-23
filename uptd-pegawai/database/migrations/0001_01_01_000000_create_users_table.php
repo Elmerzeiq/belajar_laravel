@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
             // Kolom role, enum dengan 3 pilihan, default Pembantu Bendahara
             $table->enum('role', ['admin', 'Pembantu Bendahara', 'Bendahara Kepala'])->default('Pembantu Bendahara');
             $table->rememberToken();
