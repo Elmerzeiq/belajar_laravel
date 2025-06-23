@@ -9,27 +9,32 @@
                 <i class="bi bi-wallet2 me-2"></i> Data Gaji Pegawai
             </h4>
             {{-- Form Filter --}}
-            <form class="d-flex" method="GET" action="{{ route('gaji.index') }}">
-                <select
-                    class="form-select form-select-lg me-2 select2-pegawai"
-                    name="pegawai_id"
-                    style="min-width:260px;max-width:350px;width:350px;">
-                    <option value="">-- Pilih Pegawai --</option>
-                    @foreach ($pegawaiList as $pegawai)
-                        <option value="{{ $pegawai->id }}" {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
-                            {{ $pegawai->nama }}{{ $pegawai->nip ? ' (' . $pegawai->nip . ')' : '' }}
-                        </option>
-                    @endforeach
-                </select>
-                <select class="form-select form-select-lg me-2" name="tahun" required>
-                    @foreach ($tahunList as $tahun)
-                        <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
-                            {{ $tahun }}
-                        </option>
-                    @endforeach
-                </select>
-                <button class="btn btn-primary btn-lg" type="submit">
-                    <i class="bi bi-search"></i> Tampilkan
+            <form class="d-flex align-items-end flex-wrap" method="GET" action="{{ route('gaji.index') }}">
+                <div class="me-2 mb-2 mb-sm-0" style="width:240px;min-width:180px;">
+                    <select
+                        class="form-select form-select-lg select2-pegawai"
+                        name="pegawai_id"
+                    >
+                        <option value="">-- Pilih Pegawai --</option>
+                        @foreach ($pegawaiList as $pegawai)
+                            <option value="{{ $pegawai->id }}" {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
+                                {{ $pegawai->nama }}{{ $pegawai->nip ? ' (' . $pegawai->nip . ')' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="me-2 mb-2 mb-sm-0" style="width:100px;">
+                    <select class="form-select form-select-lg" name="tahun" required>
+                        @foreach ($tahunList as $tahun)
+                            <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
+                                {{ $tahun }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-lg d-flex align-items-center" type="submit" style="height:calc(2.875rem + 2px);">
+                    <i class="bi bi-search me-1"></i>
+                    <span>Tampilkan</span>
                 </button>
             </form>
         </div>
@@ -155,38 +160,42 @@
 @endsection
 
 @section('scripts')
-    {{-- Select2 CSS & JS --}}
+    {{-- Pastikan urutan: Bootstrap CSS -> Select2 CSS -> Custom CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
-        /* Agar Select2 match dengan form-select-lg Bootstrap */
-        .select2-container .select2-selection--single {
-            height: calc(2.875rem + 2px) !important;
-            padding: 0.5rem 1rem !important;
-            font-size: 1.25rem !important;
-            line-height: 1.5 !important;
-            min-width: 220px !important;
-            max-width: 350px !important;
-            width: 350px !important;
+        /* Fix Select2 agar tetap kecil dan stabil */
+        .select2-container--default .select2-selection--single {
+            height: calc(2.5rem + 2px) !important;   /* sedikit lebih kecil */
+            padding: 0.25rem 0.75rem !important;
+            font-size: 1.1rem !important;
+            min-width: 180px !important;
+            max-width: 240px !important;
+            width: 240px !important;
+            box-sizing: border-box !important;
         }
-
         .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 2.375rem !important;
-            font-size: 1.25rem !important;
-            min-width: 220px !important;
-            max-width: 330px !important;
-            width: auto !important;
-            white-space: normal !important;
+            line-height: 2.1rem !important;
+            font-size: 1.1rem !important;
+            padding-right: 1.5rem !important;
         }
-
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 2.875rem !important;
+            height: 2.5rem !important;
+        }
+        /* Responsive tweak for filter bar */
+        @media (max-width: 575.98px) {
+            form.d-flex.align-items-end.flex-wrap > div,
+            form.d-flex.align-items-end.flex-wrap > button {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin-bottom: 0.5rem !important;
+            }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             $('.select2-pegawai').select2({
-                width: 'style',
+                width: 'resolve', // WAJIB pakai resolve
                 placeholder: '-- Pilih Pegawai --',
                 allowClear: true
             });
