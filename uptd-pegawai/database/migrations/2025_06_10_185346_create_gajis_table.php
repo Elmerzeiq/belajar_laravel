@@ -16,6 +16,8 @@ class CreateGajisTable extends Migration
             $table->decimal('gaji_pokok', 15, 2)->default(0);
             $table->decimal('total_potongan', 15, 2)->default(0);
             $table->decimal('gaji_bersih', 15, 2)->default(0);
+            $table->decimal('insentif_tetap', 15, 2)->default(0);
+            $table->decimal('bonus', 15, 2)->default(0);
             $table->json('rincian_potongan')->nullable();
             $table->timestamps();
         });

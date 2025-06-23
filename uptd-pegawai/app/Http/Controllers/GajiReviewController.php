@@ -51,7 +51,7 @@ class GajiReviewController extends Controller
 
         $potongan_tetap = PotonganTetap::all();
 
-        $total_potongan_insentif_import = session('total_potongan_persen', 0);
+        $total_potongan_insentif_import = $request->input('total_potongan_persen', 0);
 
         $potongan_absensi = 0;
         $jumlah_terlambat = 0;
@@ -214,6 +214,7 @@ class GajiReviewController extends Controller
                 'insentif_tetap' => $insentif_tetap,
                 'total_potongan' => $total_potongan,
                 'gaji_bersih' => $gaji_bersih,
+                'bonus' => $bonus,
                 'rincian_potongan' => json_encode([
                     'potongan_gaji' => $potongan_gaji,
                     'potongan_insentif' => $potongan_insentif,

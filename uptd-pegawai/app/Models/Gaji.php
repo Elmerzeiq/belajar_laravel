@@ -7,7 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Gaji extends Model
 {
     protected $fillable = [
-        'pegawai_id', 'bulan', 'tahun', 'gaji_pokok', 'total_potongan', 'gaji_bersih', 'rincian_potongan'
+        'pegawai_id',
+        'bulan',
+        'tahun',
+        'gaji_pokok',
+        'insentif_tetap',    // Tambahkan ini
+        'total_potongan',
+        'gaji_bersih',
+        'bonus',             // Tambahkan ini
+        'rincian_potongan'
     ];
 
     protected $casts = [

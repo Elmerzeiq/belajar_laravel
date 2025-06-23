@@ -1,19 +1,61 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-        .header { text-align: center; margin-bottom: 10px; }
-        .logo { display: block; margin: 0 auto 0 auto; width: 100%; max-width: 600px; }
-        .clear { clear: both; }
-        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .section-title { font-weight: bold; margin-top: 18px; margin-bottom:6px;}
-        .section-space { margin-bottom: 18px; }
-        .signature { margin-top: 32px; width: 100%; }
-        .signature td { border: none; }
-        td, th { font-size: 12px; }
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 0 auto;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 6px;
+        }
+
+        .section-space {
+            margin-bottom: 18px;
+        }
+
+        .signature {
+            margin-top: 32px;
+            width: 100%;
+        }
+
+        .signature td {
+            border: none;
+        }
+
+        td,
+        th {
+            font-size: 12px;
+        }
     </style>
 </head>
+
 <body>
     {{-- Header image only --}}
     <div class="header">
@@ -56,22 +98,24 @@
         <tr>
             <td style="width: 50%;">Gaji Pokok</td>
             <td style="width: 2%;">:</td>
-            <td style="width: 25%; text-align: right;">Rp {{ number_format($gaji->gaji_pokok,0,',','.') }}</td>
+            <td style="width: 25%; text-align: right;">Rp {{ number_format($gaji->gaji_pokok, 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td>Tunjangan Tetap Pegawai (TPP/Insentif/Remunerasi)</td>
             <td>:</td>
-            <td style="text-align: right;">Rp {{ number_format($gaji->insentif_tetap,0,',','.') }}</td>
+            <td style="text-align: right;">Rp {{ number_format($gaji->insentif_tetap, 0, ',', '.') }}</td>
         </tr>
         <tr>
             <td>Bonus</td>
             <td>:</td>
-            <td style="text-align: right;">Rp {{ number_format($gaji->bonus ?? 0,0,',','.') }}</td>
+            <td style="text-align: right;">
+                Rp {{ number_format($gaji->bonus ?? ($rincian['bonus'] ?? 0), 0, ',', '.') }}
+            </td>
         </tr>
         <tr>
             <td colspan="2" style="font-weight:bold;">Jumlah Penghasilan Kotor</td>
             <td style="font-weight:bold; text-align: right;">
-                Rp {{ number_format(($gaji->gaji_pokok + $gaji->insentif_tetap + ($gaji->bonus ?? 0)),0,',','.') }}
+                Rp {{ number_format($gaji->gaji_pokok + $gaji->insentif_tetap + ($gaji->bonus ?? ($rincian['bonus'] ?? 0)), 0, ',', '.') }}
             </td>
         </tr>
     </table>
@@ -82,63 +126,77 @@
         @php
             $rincian = json_decode($gaji->rincian_potongan ?? '{}', true);
         @endphp
-        @if(isset($rincian['detail']))
-            @foreach($rincian['detail'] as $pot)
+        @if (isset($rincian['detail']))
+            @foreach ($rincian['detail'] as $pot)
                 <tr>
                     <td style="width: 50%;">
                         {{ $pot['nama'] ?? '-' }}
-                        @if(isset($pot['tipe']) && $pot['tipe'] === 'persen')
+                        @if (isset($pot['tipe']) && $pot['tipe'] === 'persen')
                             ({{ floatval($pot['jumlah']) }}%)
                         @endif
                     </td>
                     <td style="width: 2%;">:</td>
                     <td style="width: 25%; text-align: right;">
-                        @if(isset($pot['tipe']) && $pot['tipe'] === 'persen')
-                            @if(isset($pot['nominal']))
-                                Rp {{ number_format($pot['nominal'],0,',','.') }}
+                        @if (isset($pot['tipe']) && $pot['tipe'] === 'persen')
+                            @if (isset($pot['nominal']))
+                                Rp {{ number_format($pot['nominal'], 0, ',', '.') }}
                             @else
                                 {{-- Jika data nominal tidak ada, hitung manual sesuai jenis potongan --}}
                                 @php
                                     $persen = floatval($pot['jumlah']);
                                     $nominal = 0;
-                                    if(isset($pot['jenis_potongan'])) {
-                                        if($pot['jenis_potongan'] == 'gaji_pokok') {
-                                            $nominal = $gaji->gaji_pokok * $persen / 100;
-                                        } elseif($pot['jenis_potongan'] == 'insentif') {
-                                            $nominal = $gaji->insentif_tetap * $persen / 100;
-                                        } elseif($pot['jenis_potongan'] == 'total') {
-                                            $nominal = ($gaji->gaji_pokok + $gaji->insentif_tetap) * $persen / 100;
+                                    if (isset($pot['jenis_potongan'])) {
+                                        if ($pot['jenis_potongan'] == 'gaji_pokok') {
+                                            $nominal = ($gaji->gaji_pokok * $persen) / 100;
+                                        } elseif ($pot['jenis_potongan'] == 'insentif') {
+                                            $nominal = ($gaji->insentif_tetap * $persen) / 100;
+                                        } elseif ($pot['jenis_potongan'] == 'total') {
+                                            $nominal = (($gaji->gaji_pokok + $gaji->insentif_tetap) * $persen) / 100;
                                         }
                                     }
                                 @endphp
-                                Rp {{ number_format($nominal,0,',','.') }}
+                                Rp {{ number_format($nominal, 0, ',', '.') }}
                             @endif
                         @else
-                            Rp {{ number_format($pot['jumlah'] ?? 0,0,',','.') }}
+                            Rp {{ number_format($pot['jumlah'] ?? 0, 0, ',', '.') }}
                         @endif
                     </td>
                 </tr>
             @endforeach
         @endif
         {{-- Potongan Denda Absensi --}}
-        @if(isset($rincian['potongan_insentif_import']) && (isset($rincian['potongan_insentif_import']['rupiah']) && floatval($rincian['potongan_insentif_import']['rupiah']) > 0))
+        @if (isset($rincian['potongan_insentif_import']) &&
+                (isset($rincian['potongan_insentif_import']['rupiah']) &&
+                    floatval($rincian['potongan_insentif_import']['rupiah']) > 0))
             <tr>
                 <td>
                     Potongan Denda Absensi
-                    @if(isset($rincian['potongan_insentif_import']['persen']))
+                    @if (isset($rincian['potongan_insentif_import']['persen']))
                         ({{ $rincian['potongan_insentif_import']['persen'] }}%)
                     @endif
                 </td>
                 <td>:</td>
                 <td style="text-align: right;">
-                    Rp {{ number_format($rincian['potongan_insentif_import']['rupiah'] ?? 0,0,',','.') }}
+                    Rp {{ number_format($rincian['potongan_insentif_import']['rupiah'] ?? 0, 0, ',', '.') }}
                 </td>
             </tr>
         @endif
+
+        {{-- Potongan Lain --}}
+        @if(isset($rincian['potongan_lain']) && floatval($rincian['potongan_lain']) > 0)
+            <tr>
+                <td>Potongan Lain</td>
+                <td>:</td>
+                <td style="text-align: right;">
+                    Rp {{ number_format($rincian['potongan_lain'], 0, ',', '.') }}
+                </td>
+            </tr>
+        @endif
+
         <tr>
             <td colspan="2" style="font-weight:bold; padding-top:8px;">Jumlah Potongan</td>
             <td style="font-weight:bold; text-align: right; padding-top:8px;">
-                Rp {{ number_format($gaji->total_potongan,0,',','.') }}
+                Rp {{ number_format($gaji->total_potongan, 0, ',', '.') }}
             </td>
         </tr>
     </table>
@@ -150,7 +208,7 @@
             <td style="width: 50%; font-weight: bold;">&nbsp;</td>
             <td style="width: 2%;"></td>
             <td style="width: 25%; font-weight: bold; text-align: right;">
-                Rp {{ number_format($gaji->gaji_bersih,0,',','.') }}
+                Rp {{ number_format($gaji->gaji_bersih, 0, ',', '.') }}
             </td>
         </tr>
     </table>
@@ -163,7 +221,7 @@
                 <div style="margin-bottom:8px;">Kutipan ini dibuat untuk:<br>Memenuhi persyaratan administratif</div>
             </td>
             <td style="width:35%; text-align:center;">
-                Palembang, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}<br>
+                Palembang, {{ \Carbon\Carbon::now()->locale('id')->translatedFormat('d F Y') }}<br>
                 Bendahara Pengeluaran,<br><br><br><br>
                 <strong>Nurlaila, SE, MM</strong><br>
                 Pembina (IV/a)<br>
@@ -172,4 +230,5 @@
         </tr>
     </table>
 </body>
+
 </html>

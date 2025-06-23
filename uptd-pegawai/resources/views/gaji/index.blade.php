@@ -10,7 +10,10 @@
             </h4>
             {{-- Form Filter --}}
             <form class="d-flex" method="GET" action="{{ route('gaji.index') }}">
-                <select class="form-select form-select-lg me-2 select2-pegawai" name="pegawai_id" required>
+                <select
+                    class="form-select form-select-lg me-2 select2-pegawai"
+                    name="pegawai_id"
+                    style="min-width:260px;max-width:350px;width:350px;">
                     <option value="">-- Pilih Pegawai --</option>
                     @foreach ($pegawaiList as $pegawai)
                         <option value="{{ $pegawai->id }}" {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
@@ -34,20 +37,22 @@
         {{-- Info Pegawai dan Tahun --}}
         @if (isset($selectedPegawai) && isset($selectedTahun))
             <div class="card shadow-sm mb-3 border-0">
-                <div class="card-body py-3 px-4 d-flex flex-column flex-sm-row align-items-center justify-content-between"
-                    style="background:#f8fafd;">
-                    <div class="text-center text-sm-start mb-2 mb-sm-0">
-                        <div class="fw-bold" style="font-size:1.5rem;">
-                            Nama Pegawai: {{ $selectedPegawai->nama }}
+                <div class="card-body py-3 px-4 position-relative" style="background:#f8fafd;">
+                    <div class="row align-items-center">
+                        <div class="col-md-5 text-md-start text-center mb-2 mb-md-0">
+                            <div class="fw-bold" style="font-size:1.5rem;">
+                                Nama Pegawai: {{ $selectedPegawai->nama }}
+                            </div>
+                            <div class="text-secondary" style="font-size:1.1rem;">
+                                NIP: {{ $selectedPegawai->nip ?? '-' }}
+                            </div>
                         </div>
-                        <div class="text-secondary" style="font-size:1.1rem;">
-                            NIP: {{ $selectedPegawai->nip ?? '-' }}
+                        <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
+                            <span class="fw-bold text-info" style="font-size:2.2rem;">
+                                Tahun {{ $selectedTahun }}
+                            </span>
                         </div>
-                    </div>
-                    <div class="flex-grow-1 d-flex justify-content-center align-items-center">
-                        <span class="fw-bold text-info" style="font-size:2.2rem;">
-                            Tahun {{ $selectedTahun }}
-                        </span>
+                        <div class="col-md-5"></div>
                     </div>
                 </div>
             </div>
@@ -85,7 +90,7 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            @if ($bulan['is_imported'])
+                                            @if ($bulan['is_imported'] && isset($selectedPegawai))
                                                 <a href="{{ route('gaji.preview', [
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
@@ -118,7 +123,7 @@
                                                 ]) }}" target="_blank" class="btn btn-secondary btn-sm" title="Print">
                                                     <i class="bi bi-printer-fill"></i> Print
                                                 </a>
-                                            @else
+                                            @elseif (!$bulan['is_imported'] && isset($selectedPegawai))
                                                 <form action="{{ route('absen.import') }}" method="POST"
                                                     enctype="multipart/form-data" style="display:inline;"
                                                     id="form-import-{{ $bulan['nomor'] }}-{{ $selectedPegawai->id }}-{{ $selectedTahun }}">
@@ -160,11 +165,18 @@
             padding: 0.5rem 1rem !important;
             font-size: 1.25rem !important;
             line-height: 1.5 !important;
+            min-width: 220px !important;
+            max-width: 350px !important;
+            width: 350px !important;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 2.375rem !important;
             font-size: 1.25rem !important;
+            min-width: 220px !important;
+            max-width: 330px !important;
+            width: auto !important;
+            white-space: normal !important;
         }
 
         .select2-container--default .select2-selection--single .select2-selection__arrow {
@@ -174,8 +186,9 @@
     <script>
         $(document).ready(function() {
             $('.select2-pegawai').select2({
-                width: 'resolve',
-                placeholder: '-- Pilih Pegawai --'
+                width: 'style',
+                placeholder: '-- Pilih Pegawai --',
+                allowClear: true
             });
         });
     </script>
