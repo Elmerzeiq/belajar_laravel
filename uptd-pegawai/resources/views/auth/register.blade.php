@@ -3,14 +3,14 @@
 <!-- [Head] start -->
 
 <head>
-  <title>Register | Mantis Bootstrap 5 Admin Template</title>
+  <title>Register</title>
   <!-- [Meta] -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="description" content="Mantis is made using Bootstrap 5 design framework. Download the free admin template & use it for your project.">
-  <meta name="keywords" content="Mantis, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template">
-  <meta name="author" content="CodedThemes">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  <meta name="author" content="">
 
   <!-- [Favicon] icon -->
   <link rel="icon" href="{{ asset('template/dist') }}/assets/images/favicon.svg" type="image/x-icon">
@@ -46,7 +46,7 @@
     <div class="auth-wrapper v3">
       <div class="auth-form">
         <div class="auth-header">
-          <a href="#"><img src="{{ asset('template/dist') }}/assets/images/logo-dark.svg" alt="img"></a>
+          {{-- <a href="#"><img src="{{ asset('template/dist') }}/assets/images/logo-dark.svg" alt="img"></a> --}}
         </div>
         <div class="card my-5">
           <div class="card-body">
