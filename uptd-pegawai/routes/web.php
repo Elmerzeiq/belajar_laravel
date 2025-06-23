@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Import Excel → Preview
     Route::post('/absen/import', [AbsenImportController::class, 'import'])->name('absen.import');
-    Route::get('/gaji/preview', [AbsenImportController::class, 'preview'])->name('gaji.preview');
+    Route::get('/gaji/preview/{pegawai_id}/{bulan}/{tahun}', [AbsenImportController::class, 'preview'])->name('gaji.preview');
 
     // Preview → Review (POST dari preview ke review)
     Route::post('/gaji/review', [GajiReviewController::class, 'review'])->name('gaji.review');
@@ -50,4 +50,7 @@ Route::middleware(['auth'])->group(function () {
 
     //payroll pdf
     Route::get('/gaji/{id}/slip-pdf', [PayrollController::class, 'slip'])->name('gaji.slipPdf');
+
+    // Untuk tombol Print per pegawai, bulan, tahun
+Route::get('/gaji/{pegawai_id}/{bulan}/{tahun}/payroll_pdf', [PayrollController::class, 'payrollPdf'])->name('gaji.payroll_pdf');
 });

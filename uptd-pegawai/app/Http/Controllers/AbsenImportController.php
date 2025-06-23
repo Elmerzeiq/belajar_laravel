@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
+use App\Models\PayrollResult;
 
 class AbsenImportController extends Controller
 {
@@ -161,14 +162,23 @@ class AbsenImportController extends Controller
             ];
         }
 
-        session([
+        // Simpan hasil perhitungan ke tabel payroll_results
+        $hasil_perhitungan = [
             'rows' => $rows,
-            'pegawai_id' => $request->pegawai_id,
-            'bulan' => $request->bulan,
-            'tahun' => $request->tahun,
             'insentif' => $insentif,
             'total_potongan_persen' => $total_potongan_persen,
-        ]);
+        ];
+
+        PayrollResult::updateOrCreate(
+            [
+                'pegawai_id' => $request->pegawai_id,
+                'tahun' => $request->tahun,
+                'bulan' => $request->bulan,
+            ],
+            [
+                'hasil_perhitungan' => $hasil_perhitungan,
+            ]
+        );
 
         return redirect()->route('gaji.preview', [
             'pegawai_id' => $request->pegawai_id,
@@ -177,15 +187,27 @@ class AbsenImportController extends Controller
         ]);
     }
 
-    public function preview()
+    // TERIMA PARAMETER LANGSUNG DARI ROUTE
+    public function preview($pegawai_id, $bulan, $tahun)
     {
+        $payroll = PayrollResult::where('pegawai_id', $pegawai_id)
+            ->where('tahun', $tahun)
+            ->where('bulan', $bulan)
+            ->first();
+
+        if (!$payroll) {
+            return back()->with('error', 'Data belum diimport untuk periode ini.');
+        }
+
+        $hasil = $payroll->hasil_perhitungan;
+
         return view('gaji.gaji_preview', [
-            'rows' => session('rows'),
-            'pegawai_id' => session('pegawai_id'),
-            'bulan' => session('bulan'),
-            'tahun' => session('tahun'),
-            'insentif' => session('insentif'),
-            'total_potongan_persen' => session('total_potongan_persen'),
+            'rows' => $hasil['rows'],
+            'pegawai_id' => $pegawai_id,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'insentif' => $hasil['insentif'] ?? null,
+            'total_potongan_persen' => $hasil['total_potongan_persen'] ?? 0,
         ]);
     }
 }

@@ -86,7 +86,12 @@
                                         </td>
                                         <td class="text-center">
                                             @if ($bulan['is_imported'])
-                                                <a href="#" class="btn btn-info btn-sm" title="Lihat">
+                                                <a href="{{ route('gaji.preview', [
+                                                    'pegawai_id' => $selectedPegawai->id,
+                                                    'bulan' => $bulan['nomor'],
+                                                    'tahun' => $selectedTahun,
+                                                ]) }}"
+                                                    class="btn btn-info btn-sm" title="Lihat">
                                                     <i class="bi bi-eye-fill"></i> Lihat
                                                 </a>
                                                 <a href="{{ route('gaji.review', ['pegawai_id' => $selectedPegawai->id, 'bulan' => $bulan['nomor'], 'tahun' => $selectedTahun]) }}"
@@ -105,6 +110,14 @@
                                                         <i class="bi bi-trash-fill"></i> Hapus
                                                     </button>
                                                 </form>
+                                                {{-- Tombol Print --}}
+                                                <a href="{{ route('gaji.payroll_pdf', [
+                                                    'pegawai_id' => $selectedPegawai->id,
+                                                    'bulan' => $bulan['nomor'],
+                                                    'tahun' => $selectedTahun,
+                                                ]) }}" target="_blank" class="btn btn-secondary btn-sm" title="Print">
+                                                    <i class="bi bi-printer-fill"></i> Print
+                                                </a>
                                             @else
                                                 <form action="{{ route('absen.import') }}" method="POST"
                                                     enctype="multipart/form-data" style="display:inline;"
@@ -148,10 +161,12 @@
             font-size: 1.25rem !important;
             line-height: 1.5 !important;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 2.375rem !important;
             font-size: 1.25rem !important;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 2.875rem !important;
         }

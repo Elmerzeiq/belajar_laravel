@@ -236,7 +236,10 @@ class GajiReviewController extends Controller
 
             DB::commit();
 
-            return redirect()->route('gaji.slipPdf', $gajiRecord->id);
+            return redirect()->route('gaji.index', [
+                'pegawai_id' => $request->pegawai_id,
+                'tahun' => $request->tahun,
+            ])->with('success', 'Data gaji berhasil disimpan.');
 
         } catch (\Exception $e) {
             DB::rollBack();

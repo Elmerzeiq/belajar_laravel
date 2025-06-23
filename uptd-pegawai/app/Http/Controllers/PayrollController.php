@@ -24,4 +24,25 @@ class PayrollController extends Controller
 
         return $pdf->stream('Slip_Gaji_'.$pegawai->nama.'_'.$bulan.'_'.$tahun.'.pdf');
     }
+
+    // TAMBAHKAN METHOD INI:
+    public function payrollPdf($pegawai_id, $bulan, $tahun)
+    {
+        $gaji = Gaji::with('pegawai')
+            ->where('pegawai_id', $pegawai_id)
+            ->where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->firstOrFail();
+
+        $pegawai = $gaji->pegawai;
+
+        $pdf = Pdf::loadView('gaji.payroll_pdf', [
+            'gaji' => $gaji,
+            'pegawai' => $pegawai,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+        ]);
+
+        return $pdf->stream('Slip_Gaji_'.$pegawai->nama.'_'.$bulan.'_'.$tahun.'.pdf');
+    }
 }
