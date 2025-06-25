@@ -11,13 +11,11 @@
             {{-- Form Filter --}}
             <form class="d-flex align-items-end flex-wrap" method="GET" action="{{ route('gaji.index') }}">
                 <div class="me-2 mb-2 mb-sm-0" style="width:240px;min-width:180px;">
-                    <select
-                        class="form-select form-select-lg select2-pegawai"
-                        name="pegawai_id"
-                    >
+                    <select class="form-select form-select-lg select2-pegawai" name="pegawai_id">
                         <option value="">-- Pilih Pegawai --</option>
                         @foreach ($pegawaiList as $pegawai)
-                            <option value="{{ $pegawai->id }}" {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
+                            <option value="{{ $pegawai->id }}"
+                                {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
                                 {{ $pegawai->nama }}{{ $pegawai->nip ? ' (' . $pegawai->nip . ')' : '' }}
                             </option>
                         @endforeach
@@ -32,7 +30,8 @@
                         @endforeach
                     </select>
                 </div>
-                <button class="btn btn-primary btn-lg d-flex align-items-center" type="submit" style="height:calc(2.875rem + 2px);">
+                <button class="btn btn-primary btn-lg d-flex align-items-center" type="submit"
+                    style="height:calc(2.875rem + 2px);">
                     <i class="bi bi-search me-1"></i>
                     <span>Tampilkan</span>
                 </button>
@@ -100,11 +99,17 @@
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
                                                     'tahun' => $selectedTahun,
+                                                    'mode' => 'lihat', // Tambahkan ini
                                                 ]) }}"
                                                     class="btn btn-info btn-sm" title="Lihat">
                                                     <i class="bi bi-eye-fill"></i> Lihat
                                                 </a>
-                                                <a href="{{ route('gaji.review', ['pegawai_id' => $selectedPegawai->id, 'bulan' => $bulan['nomor'], 'tahun' => $selectedTahun]) }}"
+                                                <a href="{{ route('gaji.preview', [
+                                                    'pegawai_id' => $selectedPegawai->id,
+                                                    'bulan' => $bulan['nomor'],
+                                                    'tahun' => $selectedTahun,
+
+                                                ]) }}"
                                                     class="btn btn-warning btn-sm" title="Edit">
                                                     <i class="bi bi-pencil-fill"></i> Edit
                                                 </a>
@@ -125,7 +130,8 @@
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
                                                     'tahun' => $selectedTahun,
-                                                ]) }}" target="_blank" class="btn btn-secondary btn-sm" title="Print">
+                                                ]) }}"
+                                                    target="_blank" class="btn btn-secondary btn-sm" title="Print">
                                                     <i class="bi bi-printer-fill"></i> Print
                                                 </a>
                                             @elseif (!$bulan['is_imported'] && isset($selectedPegawai))
@@ -165,7 +171,8 @@
     <style>
         /* Fix Select2 agar tetap kecil dan stabil */
         .select2-container--default .select2-selection--single {
-            height: calc(2.5rem + 2px) !important;   /* sedikit lebih kecil */
+            height: calc(2.5rem + 2px) !important;
+            /* sedikit lebih kecil */
             padding: 0.25rem 0.75rem !important;
             font-size: 1.1rem !important;
             min-width: 180px !important;
@@ -173,18 +180,22 @@
             width: 240px !important;
             box-sizing: border-box !important;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             line-height: 2.1rem !important;
             font-size: 1.1rem !important;
             padding-right: 1.5rem !important;
         }
+
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 2.5rem !important;
         }
+
         /* Responsive tweak for filter bar */
         @media (max-width: 575.98px) {
-            form.d-flex.align-items-end.flex-wrap > div,
-            form.d-flex.align-items-end.flex-wrap > button {
+
+            form.d-flex.align-items-end.flex-wrap>div,
+            form.d-flex.align-items-end.flex-wrap>button {
                 width: 100% !important;
                 max-width: 100% !important;
                 margin-bottom: 0.5rem !important;

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use App\Models\PayrollResult;
+use App\Models\Pegawai;
 
 class AbsenImportController extends Controller
 {
@@ -199,6 +200,7 @@ class AbsenImportController extends Controller
             return back()->with('error', 'Data belum diimport untuk periode ini.');
         }
 
+        $pegawai = Pegawai::findOrFail($pegawai_id);
         $hasil = $payroll->hasil_perhitungan;
 
         return view('gaji.gaji_preview', [
@@ -208,6 +210,7 @@ class AbsenImportController extends Controller
             'tahun' => $tahun,
             'insentif' => $hasil['insentif'] ?? null,
             'total_potongan_persen' => $hasil['total_potongan_persen'] ?? 0,
+            'pegawai' => $pegawai,
         ]);
     }
 }
