@@ -137,7 +137,7 @@ class GajiReviewController extends Controller
             $rincian_potongan = [];
             $potongan_total_persen = [];
 
-            foreach ($request->potongan_tetap as $id => $input_jumlah) {
+            foreach ($request->potongan_tetap ?? [] as $id => $input_jumlah) {
                 $pt = $potongan_tetap_data[$id] ?? null;
                 if (!$pt) continue;
 
@@ -244,7 +244,7 @@ class GajiReviewController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['msg' => 'Gagal menyimpan: ' . $e->getMessage()]);
+            return redirect()->route('gaji.index')->withErrors(['msg' => 'Gagal menyimpan: ' . $e->getMessage()]);
         }
     }
 }
