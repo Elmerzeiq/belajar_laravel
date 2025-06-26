@@ -54,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
      * Routes untuk Kepala Bendahara
      * ===========================
      */
-    Route::middleware(['role:Kepala Bendahara'])->group(function () {
+    Route::middleware(['role:Bendahara Kepala'])->group(function () {
         Route::get('/laporan-gaji', [LaporanGajiController::class, 'index'])->name('laporan.gaji');
         Route::get('/laporan-gaji/print', [LaporanGajiController::class, 'print'])->name('laporan.gaji.print');
     });
