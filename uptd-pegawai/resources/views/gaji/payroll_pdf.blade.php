@@ -75,14 +75,15 @@
             <td>Nama Pegawai</td>
             <td>:</td>
             <td>{{ $pegawai->nama }}</td>
-            <td>Pangkat/Golongan</td>
+            <td>Jabatan</td>
             <td>:</td>
-            <td>{{ $pegawai->pangkat ?? '-' }}</td>
+            <td>{{ $pegawai->jabatan ?? '-' }}</td>
         </tr>
         <tr>
-            <td>NIK</td>
-            <td>:</td>
-            <td>{{ $pegawai->nik ?? '-' }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>

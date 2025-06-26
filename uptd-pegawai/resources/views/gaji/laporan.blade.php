@@ -56,7 +56,8 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Nama Pegawai</th>
-                                        <th>NIP</th>
+                                        <th>Nomor Pegawai</th>
+                                        <th>Jabatan</th>
                                         <th>Total Gaji</th>
                                         {{-- Tambahkan kolom lain sesuai kebutuhan --}}
                                     </tr>
@@ -67,6 +68,7 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $gaji->pegawai->nama ?? '-' }}</td>
                                             <td>{{ $gaji->pegawai->nip ?? '-' }}</td>
+                                            <td>{{ $gaji->pegawai->jabatan ?? '-' }}</td>
                                             <td style="text-align:right;">
                                                 {{ number_format($gaji->gaji_bersih ?? 0, 0, ',', '.') }}
                                             </td>
