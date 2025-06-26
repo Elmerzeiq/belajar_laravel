@@ -28,7 +28,7 @@
                 <input type="text" name="nip" id="nip"
                        class="form-control @error('nip') is-invalid @enderror"
                        value="{{ old('nip') }}" maxlength="20"
-                       placeholder="Contoh: 123456789012345678 atau 001-BLUD-Labling">
+                       placeholder="Contoh: 1234567890 atau 001-BLUD-Labling">
                 @error('nip')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror

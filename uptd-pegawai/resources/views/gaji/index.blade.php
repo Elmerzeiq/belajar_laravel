@@ -1,6 +1,11 @@
 @extends('layouts.mantis')
 
 @section('content')
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
     <div class="">
 
         {{-- Header --}}
@@ -38,26 +43,27 @@
             </form>
         </div>
 
-       {{-- Info Pegawai dan Tahun --}}
-@if (isset($selectedPegawai) && isset($selectedTahun))
-    <div class="card shadow-sm mb-3 border-0">
-        <div class="card-body py-3 px-4 position-relative d-flex justify-content-between align-items-center" style="background:#f8fafd;">
-            <div>
-                <div class="fw-bold" style="font-size:1.5rem;">
-                    Nama Pegawai: {{ $selectedPegawai->nama }}
-                </div>
-                <div class="text-secondary" style="font-size:1.1rem;">
-                    NIP: {{ $selectedPegawai->nip ?? '-' }}
+        {{-- Info Pegawai dan Tahun --}}
+        @if (isset($selectedPegawai) && isset($selectedTahun))
+            <div class="card shadow-sm mb-3 border-0">
+                <div class="card-body py-3 px-4 position-relative d-flex justify-content-between align-items-center"
+                    style="background:#f8fafd;">
+                    <div>
+                        <div class="fw-bold" style="font-size:1.5rem;">
+                            Nama Pegawai: {{ $selectedPegawai->nama }}
+                        </div>
+                        <div class="text-secondary" style="font-size:1.1rem;">
+                            NIP: {{ $selectedPegawai->nip ?? '-' }}
+                        </div>
+                    </div>
+                    <div>
+                        <span class="fw-bold text-dark">
+                            Tahun {{ $selectedTahun }}
+                        </span>
+                    </div>
                 </div>
             </div>
-            <div>
-                <span class="fw-bold text-dark">
-                    Tahun {{ $selectedTahun }}
-                </span>
-            </div>
-        </div>
-    </div>
-@endif
+        @endif
 
 
         {{-- Tampilkan alert jika tidak ada data pegawai yang dipilih --}}
@@ -106,7 +112,6 @@
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
                                                     'tahun' => $selectedTahun,
-
                                                 ]) }}"
                                                     class="btn btn-warning btn-sm" title="Edit">
                                                     <i class="bi bi-pencil-fill"></i> Edit
