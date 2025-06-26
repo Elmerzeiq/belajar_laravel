@@ -104,7 +104,7 @@
                                                     class="btn btn-info btn-sm" title="Lihat">
                                                     <i class="bi bi-eye-fill"></i> Lihat
                                                 </a>
-                                                <a href="{{ route('gaji.preview', [
+                                                <a href="{{ route('gaji.review', [
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
                                                     'tahun' => $selectedTahun,

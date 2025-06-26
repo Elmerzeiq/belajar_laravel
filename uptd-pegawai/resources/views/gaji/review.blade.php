@@ -13,12 +13,11 @@
 
             {{-- Info Pegawai --}}
             <div class="mb-4">
-                <h5 class="fw-semibold">{{ $pegawai->nama }} <small class="text-muted">({{ $pegawai->nip ?? '-' }})</small>
-                </h5>
+                <h5 class="fw-semibold">{{ $pegawai->nama }} <small class="text-muted">({{ $pegawai->nip ?? '-' }})</small></h5>
                 <div class="text-muted">Periode: <strong>{{ bulanIndo($bulan) }} {{ $tahun }}</strong></div>
             </div>
 
-            {{-- Input Gaji Pokok dan Insentif (auto dari import) --}}
+            {{-- Input Gaji Pokok dan Insentif --}}
             <div class="row mb-4 g-3">
                 <div class="col-md-6">
                     <label for="gaji_pokok" class="form-label">Gaji Pokok</label>
@@ -38,11 +37,8 @@
                 @foreach ($potongan_tetap as $index => $item)
                     <div class="row align-items-center mb-2">
                         <div class="col-md-1">
-                            <input type="checkbox"
-                                   class="form-check-input potongan-tetap-checkbox"
-                                   id="potongan_tetap_check_{{ $item->id }}"
-                                   data-index="{{ $index }}"
-                                   checked>
+                            <input type="checkbox" class="form-check-input potongan-tetap-checkbox"
+                                id="potongan_tetap_check_{{ $item->id }}" data-index="{{ $index }}" checked>
                         </div>
                         <div class="col-md-5">
                             <label class="form-label" for="potongan_tetap_check_{{ $item->id }}">
@@ -51,14 +47,10 @@
                             </label>
                         </div>
                         <div class="col-md-4">
-                            <input type="text"
-                                   name="potongan_tetap[{{ $item->id }}]"
-                                   class="form-control potongan-tetap-input"
-                                   value="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
-                                   data-default="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
-                                   data-tipe="{{ $item->tipe }}"
-                                   data-jenis="{{ $item->jenis_potongan }}"
-                                   required>
+                            <input type="text" name="potongan_tetap[{{ $item->id }}]" class="form-control potongan-tetap-input"
+                                value="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
+                                data-default="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
+                                data-tipe="{{ $item->tipe }}" data-jenis="{{ $item->jenis_potongan }}" required>
                         </div>
                     </div>
                 @endforeach
@@ -80,21 +72,12 @@
             <div class="row mb-4 g-3">
                 <div class="col-md-6">
                     <label for="potongan_insentif_import" class="form-label">Potongan Insentif Hasil Import (%)</label>
-                    <input type="text"
-                        name="potongan_insentif_import"
-                        id="potongan_insentif_import"
-                        class="form-control"
-                        value="{{ old('potongan_insentif_import', $total_potongan_insentif_import ?? 0) }}"
-                        required>
+                    <input type="text" name="potongan_insentif_import" id="potongan_insentif_import" class="form-control"
+                        value="{{ old('potongan_insentif_import', $total_potongan_insentif_import ?? 0) }}" required>
                 </div>
                 <div class="col-md-6">
                     <label for="insentif_import" class="form-label">Nominal Potongan Insentif Import</label>
-                    <input type="text"
-                        name="insentif_import"
-                        id="insentif_import"
-                        class="form-control"
-                        value="0"
-                        required
+                    <input type="text" name="insentif_import" id="insentif_import" class="form-control" value="0" required
                         readonly>
                 </div>
             </div>
@@ -104,8 +87,13 @@
                 <strong>Total Gaji Bersih:</strong> <span id="total_gaji_display">Rp 0</span>
             </div>
 
-            {{-- Tombol Simpan --}}
-            <div class="d-flex justify-content-end">
+            {{-- Tombol Kembali dan Simpan --}}
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="{{ route('gaji.index', ['pegawai_id' => $pegawai->id, 'tahun' => $tahun]) }}"
+                    class="btn btn-outline-primary">
+                    ← Kembali
+                </a>
+
                 <button type="submit" class="btn btn-success px-4"
                     onclick="return confirm('Yakin ingin menyimpan gaji ini?')">
                     <i class="bi bi-save me-1"></i> Simpan Gaji
@@ -145,9 +133,9 @@
             document.querySelectorAll('.potongan-tetap-checkbox').forEach((checkbox, idx) => {
                 checkbox.addEventListener('change', function() {
                     const input = this.closest('.row').querySelector('.potongan-tetap-input');
+                    // Kembalikan ke value default
                     if (this.checked) {
                         input.disabled = false;
-                        // Kembalikan ke value default
                         let defaultValue = input.getAttribute('data-default') || 0;
                         potonganInputs[idx].set(defaultValue);
                     } else {
@@ -157,7 +145,6 @@
                     updateTotal();
                 });
             });
-
             // Potongan insentif import: editable, nominal otomatis
             function updateNominalInsentifImport() {
                 const insentifTetap = fields[1].getNumber();
@@ -179,8 +166,7 @@
                 }
                 updateNominalInsentifImport();
             }
-
-            // Update total gaji
+// Update total gaji
             function getNumericValue(anInstance) {
                 return anInstance.getNumber();
             }
@@ -195,8 +181,7 @@
 
                 let potonganLain = getNumericValue(fields[2]);
                 let bonus = getNumericValue(fields[3]);
-
-                // Inisialisasi akumulasi potongan
+// Inisialisasi akumulasi potongan
                 let potonganGaji = 0;
                 let potonganInsentif = 0;
                 let potonganTotal = 0;
@@ -226,12 +211,10 @@
                         }
                     }
                 });
-
-                // Gaji dan insentif setelah potongan masing-masing
+// Gaji dan insentif setelah potongan masing-masing
                 let gajiSetelahPotongan = gajiPokok - potonganGaji;
                 let insentifSetelahPotongan = insentifSetelahPotonganImport - potonganInsentif;
-
-                // Potongan total (persen): dihitung setelah potongan gaji dan insentif
+// Potongan total (persen): dihitung setelah potongan gaji dan insentif
                 let totalSementara = gajiSetelahPotongan + insentifSetelahPotongan;
                 totalPersenPotonganTotal.forEach(nilai => {
                     potonganTotal += totalSementara * nilai / 100;
@@ -241,29 +224,21 @@
                 if (total < 0) total = 0;
 
                 document.getElementById('total_gaji_display').textContent =
-                    new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                    }).format(total);
-
-                // Update nominal insentif import setiap kali update total (karena insentif atau persen bisa berubah)
+                    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(total);
+// Update nominal insentif import setiap kali update total (karena insentif atau persen bisa berubah)
                 updateNominalInsentifImport();
             }
-
-            // Listener untuk Potongan Insentif Import (editable)
+// Listener untuk Potongan Insentif Import (editable)
             document.getElementById('potongan_insentif_import').addEventListener('input', function() {
                 updateNominalInsentifImport();
                 updateTotal();
             });
-
-            // Listener untuk Insentif Tetap (karena jika berubah, nominal insentif import juga berubah)
+// Listener untuk Insentif Tetap (karena jika berubah, nominal insentif import juga berubah)
             document.getElementById('insentif_tetap').addEventListener('input', function() {
                 updateNominalInsentifImport();
                 updateTotal();
             });
-
-            // Listeners lain
+// Listeners lain
             [...fields, ...potonganInputs].forEach(an => {
                 an.domElement.addEventListener('input', updateTotal);
             });
