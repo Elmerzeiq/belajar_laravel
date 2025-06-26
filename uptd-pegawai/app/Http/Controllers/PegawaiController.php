@@ -21,16 +21,17 @@ class PegawaiController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string',
-            'nip' => 'required|numeric',
+            'nama' => 'required|string|max:25',
+            'nip' => 'required|string|max:20',
             'jabatan' => 'required|string',
             'gaji_pokok' => 'required|numeric',
             'insentif_kotor' => 'required|numeric',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // validasi foto
         ], [
             'nama.required' => 'Nama Pegawai harus diisi.',
-            'nip.required' => 'NIP harus diisi.',
-            'jabatan.required' => 'Jabatan harus diisi.',
+            'nip.required' => 'Nomor Pegawai harus diisi.',
+            'nip.max' => 'Nomor Pegawai maksimal 20 karakter.',
+            'jabatan.required' => 'Jabatan harus Dipilih',
             'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
             'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
             'gaji_pokok.numeric' => 'Gaji Pokok harus berupa angka.',
@@ -66,16 +67,17 @@ class PegawaiController extends Controller
     public function update(Request $request, Pegawai $pegawai)
     {
         $validated = $request->validate([
-            'nama' => 'required|string',
-            'nip' => 'required|numeric',
+            'nama' => 'required|string|max:25',
+            'nip' => 'required|string|max:20',
             'jabatan' => 'required|string',
             'gaji_pokok' => 'required|numeric',
             'insentif_kotor' => 'required|numeric',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // validasi foto
         ], [
             'nama.required' => 'Nama Pegawai harus diisi.',
-            'nip.required' => 'NIP harus diisi.',
-            'jabatan.required' => 'Jabatan harus diisi.',
+            'nip.required' => 'Nomor Pegawai harus diisi.',
+            'nip.max' => 'Nomor Pegawai maksimal 20 karakter.',
+            'jabatan.required' => 'Jabatan harus Dipilih.',
             'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
             'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
             'gaji_pokok.numeric' => 'Gaji Pokok harus berupa angka.',

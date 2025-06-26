@@ -64,7 +64,7 @@
 
     <table style="width: 100%; margin-bottom: 10px;">
         <tr>
-            <td style="width: 28%;">Nomor Urut</td>
+            <td style="width: 28%;">Nomor Pegawai</td>
             <td style="width: 2%;">:</td>
             <td>{{ $pegawai->nip }}</td>
             <td style="width: 22%;">Bulan</td>
