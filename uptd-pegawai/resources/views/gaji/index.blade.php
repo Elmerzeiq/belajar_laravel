@@ -38,29 +38,27 @@
             </form>
         </div>
 
-        {{-- Info Pegawai dan Tahun --}}
-        @if (isset($selectedPegawai) && isset($selectedTahun))
-            <div class="card shadow-sm mb-3 border-0">
-                <div class="card-body py-3 px-4 position-relative" style="background:#f8fafd;">
-                    <div class="row align-items-center">
-                        <div class="col-md-5 text-md-start text-center mb-2 mb-md-0">
-                            <div class="fw-bold" style="font-size:1.5rem;">
-                                Nama Pegawai: {{ $selectedPegawai->nama }}
-                            </div>
-                            <div class="text-secondary" style="font-size:1.1rem;">
-                                NIP: {{ $selectedPegawai->nip ?? '-' }}
-                            </div>
-                        </div>
-                        <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
-                            <span class="fw-bold text-info" style="font-size:2.2rem;">
-                                Tahun {{ $selectedTahun }}
-                            </span>
-                        </div>
-                        <div class="col-md-5"></div>
-                    </div>
+       {{-- Info Pegawai dan Tahun --}}
+@if (isset($selectedPegawai) && isset($selectedTahun))
+    <div class="card shadow-sm mb-3 border-0">
+        <div class="card-body py-3 px-4 position-relative d-flex justify-content-between align-items-center" style="background:#f8fafd;">
+            <div>
+                <div class="fw-bold" style="font-size:1.5rem;">
+                    Nama Pegawai: {{ $selectedPegawai->nama }}
+                </div>
+                <div class="text-secondary" style="font-size:1.1rem;">
+                    NIP: {{ $selectedPegawai->nip ?? '-' }}
                 </div>
             </div>
-        @endif
+            <div>
+                <span class="fw-bold text-dark">
+                    Tahun {{ $selectedTahun }}
+                </span>
+            </div>
+        </div>
+    </div>
+@endif
+
 
         {{-- Tampilkan alert jika tidak ada data pegawai yang dipilih --}}
         @if (empty($bulanList) && request()->filled(['pegawai_id', 'tahun']))
