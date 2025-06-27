@@ -8,10 +8,10 @@ use Carbon\Carbon;
 use App\Models\PayrollResult;
 use App\Models\Pegawai;
 use App\Models\Absensi;
-use App\Models\AbsensiImport;
 
 class AbsenImportController extends Controller
 {
+    // Konversi dari nilai Excel Time ke format H:i
     private function excelTimeToHM($excelTime)
     {
         if (is_null($excelTime) || $excelTime === '') return null;
@@ -24,6 +24,7 @@ class AbsenImportController extends Controller
         return sprintf('%02d:%02d', $hours, $minutes);
     }
 
+    // Hitung potongan maksimal 1.5%
     private function hitungPotonganTerpisah($menit)
     {
         return match (true) {
@@ -47,6 +48,7 @@ class AbsenImportController extends Controller
         $data = Excel::toArray([], $request->file('file_absen')->getRealPath());
         $sheet = $data[0];
 
+        // Temukan header
         $header = null;
         $headerIndex = null;
         foreach ($sheet as $index => $row) {
@@ -126,6 +128,7 @@ class AbsenImportController extends Controller
             $potongan_persen = 0;
             $tidak_hadir = false;
 
+            // Jika tidak ada scan masuk & keluar
             if (empty($scan_masuk) && empty($scan_keluar)) {
                 $potongan_persen = 3.0;
                 $tidak_hadir = true;
@@ -145,30 +148,6 @@ class AbsenImportController extends Controller
 
             $total_potongan_persen += $potongan_persen;
 
-            // Simpan ke tabel absensi
-            Absensi::updateOrCreate(
-                [
-                    'pegawai_id' => $request->pegawai_id,
-                    'tanggal' => $tanggalObj->format('Y-m-d'),
-                ],
-                [
-                    'hari' => ucfirst($hari),
-                    'jam_masuk' => $jam_masuk,
-                    'jam_pulang' => $jam_pulang,
-                    'scan_masuk' => $scan_masuk,
-                    'scan_keluar' => $scan_keluar,
-                    'terlambat_menit' => $terlambat_menit,
-                    'pulang_cepat_menit' => $pulang_cepat_menit,
-                    'potongan_terlambat' => $potongan_terlambat,
-                    'potongan_pulang_cepat' => $potongan_pulang_cepat,
-                    'potongan_persen' => $potongan_persen,
-                    'tidak_hadir' => $tidak_hadir,
-                    'bulan' => $request->bulan,
-                    'tahun' => $request->tahun,
-                ]
-            );
-
-            // Simpan ke hasil JSON
             $rows[] = [
                 'tanggal' => $tanggalObj->format('Y-m-d'),
                 'hari' => ucfirst($hari),
@@ -185,7 +164,7 @@ class AbsenImportController extends Controller
             ];
         }
 
-        // Simpan hasil rekap ke tabel payroll_results
+        // Simpan hasil perhitungan ke tabel payroll_results
         $hasil_perhitungan = [
             'rows' => $rows,
             'insentif' => $insentif,
@@ -210,6 +189,7 @@ class AbsenImportController extends Controller
         ]);
     }
 
+    // TERIMA PARAMETER LANGSUNG DARI ROUTE
     public function preview($pegawai_id, $bulan, $tahun)
     {
         $payroll = PayrollResult::where('pegawai_id', $pegawai_id)
