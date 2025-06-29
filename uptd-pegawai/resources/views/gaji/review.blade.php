@@ -110,7 +110,7 @@
             const autoNumericOptions = {
                 digitGroupSeparator: '.',
                 decimalCharacter: ',',
-                decimalPlaces: 0,
+                decimalPlaces: 1,
                 minimumValue: '0',
                 unformatOnSubmit: true
             };
