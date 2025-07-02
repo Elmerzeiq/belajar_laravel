@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use App\Models\PayrollResult;
 use App\Models\Pegawai;
-use App\Models\Absensi;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class AbsenImportController extends Controller
 {
@@ -15,13 +15,20 @@ class AbsenImportController extends Controller
     private function excelTimeToHM($excelTime)
     {
         if (is_null($excelTime) || $excelTime === '') return null;
+
+        // Jika format sudah string jam (contoh: 07:30)
         if (preg_match('/^\d{1,2}:\d{2}$/', $excelTime)) {
             return $excelTime;
         }
-        $totalSeconds = round($excelTime * 24 * 60 * 60);
-        $hours = floor($totalSeconds / 3600);
-        $minutes = floor(($totalSeconds % 3600) / 60);
-        return sprintf('%02d:%02d', $hours, $minutes);
+
+        // Jika format serial Excel time
+        try {
+            $dateTime = Date::excelToDateTimeObject($excelTime);
+            return $dateTime->format('H:i');
+        } catch (\Exception $e) {
+            \Log::error("Gagal konversi jam: $excelTime");
+            return null;
+        }
     }
 
     // Hitung potongan maksimal 1.5%
@@ -33,6 +40,35 @@ class AbsenImportController extends Controller
             $menit <= 60 => 1,
             default => 1.5,
         };
+    }
+
+    // Konversi tanggal dari berbagai format string atau serial Excel
+    private function parseTanggal($tanggal)
+    {
+        if (is_numeric($tanggal)) {
+            try {
+                return Carbon::instance(Date::excelToDateTimeObject($tanggal));
+            } catch (\Exception $e) {
+                \Log::error("Gagal konversi serial Excel date: $tanggal");
+                return null;
+            }
+        }
+
+        $formats = ['Y-m-d', 'd/m/Y', 'd-m-Y'];
+        foreach ($formats as $format) {
+            try {
+                return Carbon::createFromFormat($format, $tanggal);
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        try {
+            return Carbon::parse($tanggal);
+        } catch (\Exception $e) {
+            \Log::error("Gagal parsing tanggal: $tanggal");
+            return null;
+        }
     }
 
     public function import(Request $request)
@@ -92,16 +128,9 @@ class AbsenImportController extends Controller
 
             if (empty($tanggal) || empty($jam_masuk) || empty($jam_pulang)) continue;
 
-            try {
-                $tanggalObj = Carbon::createFromFormat('Y-m-d', $tanggal);
-            } catch (\Exception $e) {
-                try {
-                    $tanggalObj = Carbon::createFromFormat('d/m/Y', $tanggal);
-                } catch (\Exception $e2) {
-                    \Log::error("Gagal parsing tanggal: $tanggal");
-                    continue;
-                }
-            }
+            // Konversi tanggal yang fleksibel
+            $tanggalObj = $this->parseTanggal($tanggal);
+            if (!$tanggalObj) continue;
 
             $hari = $tanggalObj->locale('id')->isoFormat('dddd');
             $waktu_masuk_normal = $tanggalObj->copy()->setTime(7, 30, 0);
