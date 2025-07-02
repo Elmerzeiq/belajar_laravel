@@ -121,8 +121,8 @@ class AbsenImportController extends Controller
 
         foreach ($dataRows as $row) {
             $tanggal = $row[$colIndexes['Tanggal']] ?? null;
-            $jam_masuk = $row[$colIndexes['Jam Masuk']] ?? null;
-            $jam_pulang = $row[$colIndexes['Jam Pulang']] ?? null;
+            $jam_masuk = $this->excelTimeToHM($row[$colIndexes['Jam Masuk']] ?? null); // Perbaikan di sini
+            $jam_pulang = $this->excelTimeToHM($row[$colIndexes['Jam Pulang']] ?? null); // Perbaikan di sini
             $scan_masuk = $this->excelTimeToHM($row[$colIndexes['Scan Masuk']] ?? null);
             $scan_keluar = $this->excelTimeToHM($row[$colIndexes['Scan Keluar']] ?? null);
 
