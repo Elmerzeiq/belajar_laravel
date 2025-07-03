@@ -58,7 +58,7 @@ class AbsenImportController extends Controller
         }
 
         // Coba beberapa format string tanggal
-        $formats = ['Y-m-d', 'd/m/Y', 'd-m-Y'];
+        $formats = ['d/m/Y','Y-m-d','Y-d-m'];
         foreach ($formats as $format) {
             try {
                 return Carbon::createFromFormat($format, $tanggal); // Coba konversi dengan format yang diuji
@@ -78,39 +78,34 @@ class AbsenImportController extends Controller
     // Fungsi utama untuk proses import absen
     public function import(Request $request)
     {
-        // Validasi input request
         $request->validate([
-            'file_absen' => 'required|mimes:xlsx,xls', // Wajib upload file Excel
-            'pegawai_id' => 'required|integer', // Wajib ada ID pegawai
-            'bulan' => 'required|integer', // Wajib ada bulan
-            'tahun' => 'required|integer', // Wajib ada tahun
+            'file_absen' => 'required|mimes:xlsx,xls',
+            'pegawai_id' => 'required|integer',
+            'bulan' => 'required|integer',
+            'tahun' => 'required|integer',
         ]);
 
-        $insentif = $request->insentif; // Ambil insentif dari input
-        $data = Excel::toArray([], $request->file('file_absen')->getRealPath()); // Baca isi file Excel
-        $sheet = $data[0]; // Ambil sheet pertama
+        $insentif = $request->insentif;
+        $data = Excel::toArray([], $request->file('file_absen')->getRealPath());
+        $sheet = $data[0];
 
-        // Mencari header file
+        // Cari header
         $header = null;
         $headerIndex = null;
-        foreach ($sheet as $index => $row) { // Loop setiap baris
-            if (in_array('Tanggal', $row)) { // Jika ketemu kolom Tanggal
-                $header = $row; // Simpan header
-                $headerIndex = $index; // Simpan posisi header
-                break; // Hentikan pencarian
+        foreach ($sheet as $index => $row) {
+            if (in_array('Tanggal', $row)) {
+                $header = $row;
+                $headerIndex = $index;
+                break;
             }
         }
-
-        // Jika header tidak ditemukan
         if (!$header) {
             return back()->with('error', 'Header kolom tidak ditemukan. Pastikan format file Excel sesuai.');
         }
 
-        // Kolom yang harus ada
-        $wantedCols = ['Tanggal', 'Jam Masuk', 'Jam Pulang', 'Scan Masuk', 'Scan Keluar'];
+        // Tambahkan 'Pengecualian' sebagai kolom wajib
+        $wantedCols = ['Tanggal', 'Jam Masuk', 'Jam Pulang', 'Scan Masuk', 'Scan Keluar', 'Pengecualian'];
         $colIndexes = [];
-
-        // Cari posisi masing-masing kolom yang dibutuhkan
         foreach ($wantedCols as $wanted) {
             foreach ($header as $i => $colName) {
                 if (strcasecmp(trim($colName), $wanted) == 0) {
@@ -119,31 +114,29 @@ class AbsenImportController extends Controller
                 }
             }
         }
-
-        // Jika ada kolom yang tidak ditemukan
-        if (count($colIndexes) < count($wantedCols)) {
-            return back()->with('error', 'Beberapa kolom tidak ditemukan. Pastikan format file Excel sesuai.');
+        // Cek minimal kolom utama, abaikan pengecualian jika tidak ada
+        if (count($colIndexes) < count($wantedCols) - 1) {
+            return back()->with('error', 'Beberapa kolom utama tidak ditemukan. Pastikan format file Excel sesuai.');
         }
 
-        $dataRows = array_slice($sheet, $headerIndex + 1); // Ambil data mulai setelah header
-        $rows = []; // Simpan hasil proses per baris
-        $total_potongan_persen = 0.0; // Simpan total potongan pegawai
+        $dataRows = array_slice($sheet, $headerIndex + 1);
+        $rows = [];
+        $total_potongan_persen = 0.0;
 
-        foreach ($dataRows as $row) { // Loop setiap data
+        foreach ($dataRows as $row) {
             $tanggal = $row[$colIndexes['Tanggal']] ?? null;
             $jam_masuk = $this->excelTimeToHM($row[$colIndexes['Jam Masuk']] ?? null);
             $jam_pulang = $this->excelTimeToHM($row[$colIndexes['Jam Pulang']] ?? null);
             $scan_masuk = $this->excelTimeToHM($row[$colIndexes['Scan Masuk']] ?? null);
             $scan_keluar = $this->excelTimeToHM($row[$colIndexes['Scan Keluar']] ?? null);
+            // Ambil pengecualian DENGAN kapitalisasi asli
+            $pengecualian = isset($colIndexes['Pengecualian']) ? trim($row[$colIndexes['Pengecualian']] ?? '') : '';
 
             if (empty($tanggal) || empty($jam_masuk) || empty($jam_pulang)) continue;
-
-            $tanggalObj = $this->parseTanggal($tanggal); // Konversi tanggal
+            $tanggalObj = $this->parseTanggal($tanggal);
             if (!$tanggalObj) continue;
+            $hari = $tanggalObj->locale('id')->isoFormat('dddd');
 
-            $hari = $tanggalObj->locale('id')->isoFormat('dddd'); // Ambil hari dalam bahasa Indonesia
-
-            // Tentukan waktu masuk dan pulang normal
             $waktu_masuk_normal = $tanggalObj->copy()->setTime(7, 30, 0);
             $waktu_pulang_normal = in_array(strtolower($hari), ['jumat', 'friday'])
                 ? $tanggalObj->copy()->setTime(16, 30, 0)
@@ -154,45 +147,51 @@ class AbsenImportController extends Controller
             } catch (\Exception $e) {
                 $waktu_masuk_aktual = null;
             }
-
             try {
                 $waktu_pulang_aktual = $scan_keluar ? Carbon::createFromFormat('H:i', $scan_keluar)->setDateFrom($tanggalObj) : null;
             } catch (\Exception $e) {
                 $waktu_pulang_aktual = null;
             }
 
-            $terlambat_menit = 0; // Jumlah menit terlambat
-            $pulang_cepat_menit = 0; // Jumlah menit pulang cepat
-            $potongan_terlambat = 0; // Potongan karena terlambat
-            $potongan_pulang_cepat = 0; // Potongan karena pulang cepat
-            $potongan_persen = 0; // Total potongan hari itu
-            $tidak_hadir = false; // Apakah pegawai tidak hadir
+            $terlambat_menit = 0;
+            $pulang_cepat_menit = 0;
+            $potongan_terlambat = 0;
+            $potongan_pulang_cepat = 0;
+            $potongan_persen = 0;
+            $tidak_hadir = false;
 
-            // Jika tidak ada scan masuk dan keluar
-            if (empty($scan_masuk) && empty($scan_keluar)) {
-                $potongan_persen = 3.0; // Potongan 3% jika tidak hadir
-                $tidak_hadir = true;
+            // LOGIKA PENGECUALIAN (case-insensitive)
+            $pengecualian_lower = strtolower($pengecualian);
+            $is_pengecualian = in_array($pengecualian_lower, ['other', 'dinas luar']);
+
+            if ($is_pengecualian) {
+                // Tidak kena denda walau scan kosong
+                $potongan_terlambat = 0;
+                $potongan_pulang_cepat = 0;
+                $potongan_persen = 0;
+                $tidak_hadir = false;
             } else {
-                // Hitung keterlambatan
-                if ($waktu_masuk_aktual && $waktu_masuk_aktual->gt($waktu_masuk_normal)) {
-                    $terlambat_menit = $waktu_masuk_normal->diffInMinutes($waktu_masuk_aktual);
-                    $potongan_terlambat = $this->hitungPotonganTerpisah($terlambat_menit);
+                // Logika lama
+                if (empty($scan_masuk) && empty($scan_keluar)) {
+                    $potongan_persen = 3.0;
+                    $tidak_hadir = true;
+                } else {
+                    if ($waktu_masuk_aktual && $waktu_masuk_aktual->gt($waktu_masuk_normal)) {
+                        $terlambat_menit = $waktu_masuk_normal->diffInMinutes($waktu_masuk_aktual);
+                        $potongan_terlambat = $this->hitungPotonganTerpisah($terlambat_menit);
+                    }
+                    if ($waktu_pulang_aktual && $waktu_pulang_aktual->lt($waktu_pulang_normal)) {
+                        $pulang_cepat_menit = abs($waktu_pulang_normal->diffInMinutes($waktu_pulang_aktual, false));
+                        $potongan_pulang_cepat = $this->hitungPotonganTerpisah($pulang_cepat_menit);
+                    }
+                    $potongan_persen = $potongan_terlambat + $potongan_pulang_cepat;
                 }
-
-                // Hitung pulang cepat
-                if ($waktu_pulang_aktual && $waktu_pulang_aktual->lt($waktu_pulang_normal)) {
-                    $pulang_cepat_menit = abs($waktu_pulang_normal->diffInMinutes($waktu_pulang_aktual, false));
-                    $potongan_pulang_cepat = $this->hitungPotonganTerpisah($pulang_cepat_menit);
-                }
-
-                $potongan_persen = $potongan_terlambat + $potongan_pulang_cepat;
             }
 
             $total_potongan_persen += $potongan_persen;
 
-            // Simpan hasil per hari
             $rows[] = [
-                'tanggal' => $tanggalObj->format('Y-m-d'),
+                'tanggal' => $tanggalObj->format('d-m-Y'),
                 'hari' => ucfirst($hari),
                 'jam_masuk' => $jam_masuk,
                 'jam_pulang' => $jam_pulang,
@@ -204,17 +203,16 @@ class AbsenImportController extends Controller
                 'potongan_pulang_cepat' => $potongan_pulang_cepat,
                 'potongan_persen' => $potongan_persen,
                 'tidak_hadir' => $tidak_hadir,
+                'pengecualian' => $pengecualian, // simpan dengan kapitalisasi asli
             ];
         }
 
-        // Buat array hasil perhitungan
         $hasil_perhitungan = [
             'rows' => $rows,
             'insentif' => $insentif,
             'total_potongan_persen' => $total_potongan_persen,
         ];
 
-        // Simpan atau update ke tabel payroll_results
         PayrollResult::updateOrCreate(
             [
                 'pegawai_id' => $request->pegawai_id,
@@ -226,7 +224,6 @@ class AbsenImportController extends Controller
             ]
         );
 
-        // Redirect ke halaman preview gaji
         return redirect()->route('gaji.preview', [
             'pegawai_id' => $request->pegawai_id,
             'bulan' => $request->bulan,

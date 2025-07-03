@@ -59,6 +59,7 @@
                         <th>Terlambat (mnt)</th>
                         <th>Pulang Cepat (mnt)</th>
                         <th>Potongan (%)</th>
+                        <th>Pengecualian</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -73,6 +74,7 @@
                             <td>{{ $row['terlambat_menit'] }}</td>
                             <td>{{ $row['pulang_cepat_menit'] }}</td>
                             <td>{{ $row['potongan_persen'] }}</td>
+                            <td>{{ $row['pengecualian'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>
