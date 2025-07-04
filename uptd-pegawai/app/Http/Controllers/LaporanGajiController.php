@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Gaji; // Pastikan model Gaji sudah ada
+use App\Models\Gaji;
 use App\Models\Pegawai;
-
-// Tambahkan PDF facade
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanGajiController extends Controller
@@ -19,14 +17,19 @@ class LaporanGajiController extends Controller
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
         ];
 
-        $tahunList = range(date('Y') - 5, date('Y') + 5);
+        // Tahun fleksibel: 1900 - 2100
+        $tahunList = array_reverse(range(1900, 2100));
 
         $laporan = [];
-
         $filterBulan = $request->get('bulan');
         $filterTahun = $request->get('tahun');
 
         if ($filterBulan && $filterTahun) {
+            $request->validate([
+                'bulan' => 'required|numeric|min:1|max:12',
+                'tahun' => 'required|numeric|min:1900|max:2100',
+            ]);
+
             $laporan = Gaji::with('pegawai')
                 ->where('bulan', $filterBulan)
                 ->where('tahun', $filterTahun)
@@ -42,7 +45,6 @@ class LaporanGajiController extends Controller
         ]);
     }
 
-    // Method print: generate PDF seperti payroll_pdf
     public function print(Request $request)
     {
         $bulanList = [
@@ -56,13 +58,17 @@ class LaporanGajiController extends Controller
 
         $laporan = [];
         if ($filterBulan && $filterTahun) {
+            $request->validate([
+                'bulan' => 'required|numeric|min:1|max:12',
+                'tahun' => 'required|numeric|min:1900|max:2100',
+            ]);
+
             $laporan = Gaji::with('pegawai')
                 ->where('bulan', $filterBulan)
                 ->where('tahun', $filterTahun)
                 ->get();
         }
 
-        // Generate PDF
         $pdf = Pdf::loadView('gaji.laporan_print', [
             'bulanList' => $bulanList,
             'laporan' => $laporan,
@@ -70,6 +76,6 @@ class LaporanGajiController extends Controller
             'filterTahun' => $filterTahun,
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->stream('laporan_gaji_'.$filterBulan.'_'.$filterTahun.'.pdf');
+        return $pdf->stream('laporan_gaji_' . $filterBulan . '_' . $filterTahun . '.pdf');
     }
 }

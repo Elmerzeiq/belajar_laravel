@@ -10,7 +10,7 @@
                 <form class="row g-2 align-items-end mb-4" method="GET" action="{{ route('laporan.gaji') }}">
                     <div class="col-md-4">
                         <label>Bulan</label>
-                        <select name="bulan" class="form-select" required>
+                        <select name="bulan" class="form-select select2-bulan" required>
                             <option value="">-- Pilih Bulan --</option>
                             @foreach ($bulanList as $num => $nama)
                                 <option value="{{ $num }}"
@@ -22,7 +22,7 @@
                     </div>
                     <div class="col-md-4">
                         <label>Tahun</label>
-                        <select name="tahun" class="form-select" required>
+                        <select name="tahun" class="form-select select2-tahun" required>
                             <option value="">-- Pilih Tahun --</option>
                             @foreach ($tahunList as $tahun)
                                 <option value="{{ $tahun }}"
@@ -58,8 +58,7 @@
                                         <th>Nama Pegawai</th>
                                         <th>Nomor Pegawai</th>
                                         <th>Jabatan</th>
-                                        <th>Total Gaji</th>
-                                        {{-- Tambahkan kolom lain sesuai kebutuhan --}}
+                                        <th style="text-align:right;">Total Gaji</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -72,7 +71,6 @@
                                             <td style="text-align:right;">
                                                 {{ number_format($gaji->gaji_bersih ?? 0, 0, ',', '.') }}
                                             </td>
-                                            {{-- Kolom lain jika ada --}}
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -85,4 +83,23 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2-bulan').select2({
+                width: 'resolve',
+                placeholder: '-- Pilih Bulan --',
+                allowClear: true
+            });
+            $('.select2-tahun').select2({
+                width: 'resolve',
+                placeholder: '-- Pilih Tahun --',
+                allowClear: true
+            });
+        });
+    </script>
 @endsection
