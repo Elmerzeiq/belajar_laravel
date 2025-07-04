@@ -20,17 +20,11 @@
                             @endforeach
                         </select>
                     </div>
+                    {{-- Pemilihan tahun pada laporan --}}
                     <div class="col-md-4">
                         <label>Tahun</label>
-                        <select name="tahun" class="form-select" required>
-                            <option value="">-- Pilih Tahun --</option>
-                            @foreach ($tahunList as $tahun)
-                                <option value="{{ $tahun }}"
-                                    {{ (request('tahun') ?? date('Y')) == $tahun ? 'selected' : '' }}>
-                                    {{ $tahun }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <input type="number" name="tahun" class="form-control"
+                            value="{{ request('tahun') ?? date('Y') }}" min="2000" max="2099" required>
                     </div>
                     <div class="col-md-4">
                         <button class="btn btn-primary" type="submit">Tampilkan</button>
