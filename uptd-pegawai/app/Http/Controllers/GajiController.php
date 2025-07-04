@@ -11,22 +11,14 @@ class GajiController extends Controller
     public function index(Request $request)
     {
         $pegawaiList = Pegawai::all();
-        
-        // Menampilkan tahun dari 1900 sampai 2100, diurutkan dari yang terbaru
-        $tahunList = array_reverse(range(1900, 2100));
+        // Urutan tahun dari sekarang ke 5 tahun ke belakang
+        $tahunList = range(date('Y'), date('Y') - 5);
 
         $selectedPegawai = null;
         $selectedTahun = null;
         $bulanList = [];
 
         if ($request->filled(['pegawai_id', 'tahun'])) {
-
-            // Validasi input tahun dan pegawai
-            $request->validate([
-                'tahun' => 'required|numeric|min:1900|max:2100',
-                'pegawai_id' => 'required|exists:pegawais,id',
-            ]);
-
             $selectedPegawai = Pegawai::find($request->pegawai_id);
             $selectedTahun = $request->tahun;
 
@@ -43,16 +35,17 @@ class GajiController extends Controller
                     ->first();
 
                 $bulanList[] = [
-                    'nomor' => $i,
+                    'nomor' => $i, // nomor bulan (untuk dipakai di link Import Excel)
                     'nama' => $namaBulan[$i],
                     'is_imported' => $gaji ? true : false,
-                    'gaji_total' => $gaji->gaji_bersih ?? null,
+                    'gaji_total' => $gaji->gaji_bersih ?? null, // sesuaikan dengan kolom gaji bersih di tabelmu
                 ];
             }
         }
 
         return view('gaji.index', compact(
-            'pegawaiList', 'tahunList', 'selectedPegawai', 'selectedTahun', 'bulanList'
+            'pegawaiList', 'tahunList',
+            'selectedPegawai', 'selectedTahun', 'bulanList'
         ))->with('showTable', $request->filled(['pegawai_id', 'tahun']));
     }
 }

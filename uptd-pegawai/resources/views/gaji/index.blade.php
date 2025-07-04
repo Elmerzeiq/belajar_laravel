@@ -15,22 +15,19 @@
             </h4>
             {{-- Form Filter --}}
             <form class="d-flex align-items-end flex-wrap" method="GET" action="{{ route('gaji.index') }}">
-                {{-- Dropdown Pegawai --}}
                 <div class="me-2 mb-2 mb-sm-0" style="width:240px;min-width:180px;">
-                    <select class="form-select form-select-lg select2-pegawai" name="pegawai_id" required>
+                    <select class="form-select form-select-lg select2-pegawai" name="pegawai_id">
                         <option value="">-- Pilih Pegawai --</option>
                         @foreach ($pegawaiList as $pegawai)
-                            <option value="{{ $pegawai->id }}" {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
+                            <option value="{{ $pegawai->id }}"
+                                {{ request('pegawai_id') == $pegawai->id ? 'selected' : '' }}>
                                 {{ $pegawai->nama }}{{ $pegawai->nip ? ' (' . $pegawai->nip . ')' : '' }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-
-                {{-- Dropdown Tahun Kecil --}}
                 <div class="me-2 mb-2 mb-sm-0" style="width:100px;">
-                    <select class="form-select select2-tahun" name="tahun" required>
-                        <option value="">Tahun</option>
+                    <select class="form-select form-select-lg" name="tahun" required>
                         @foreach ($tahunList as $tahun)
                             <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>
                                 {{ $tahun }}
@@ -38,7 +35,6 @@
                         @endforeach
                     </select>
                 </div>
-
                 <button class="btn btn-primary btn-lg d-flex align-items-center" type="submit"
                     style="height:calc(2.875rem + 2px);">
                     <i class="bi bi-search me-1"></i>
@@ -68,6 +64,7 @@
                 </div>
             </div>
         @endif
+
 
         {{-- Tampilkan alert jika tidak ada data pegawai yang dipilih --}}
         @if (empty($bulanList) && request()->filled(['pegawai_id', 'tahun']))
@@ -106,7 +103,7 @@
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
                                                     'tahun' => $selectedTahun,
-                                                    'mode' => 'lihat',
+                                                    'mode' => 'lihat', // Tambahkan ini
                                                 ]) }}"
                                                     class="btn btn-info btn-sm" title="Lihat">
                                                     <i class="bi bi-eye-fill"></i> Lihat
@@ -131,6 +128,7 @@
                                                         <i class="bi bi-trash-fill"></i> Hapus
                                                     </button>
                                                 </form>
+                                                {{-- Tombol Print --}}
                                                 <a href="{{ route('gaji.payroll_pdf', [
                                                     'pegawai_id' => $selectedPegawai->id,
                                                     'bulan' => $bulan['nomor'],
@@ -177,6 +175,7 @@
         /* Fix Select2 agar tetap kecil dan stabil */
         .select2-container--default .select2-selection--single {
             height: calc(2.5rem + 2px) !important;
+            /* sedikit lebih kecil */
             padding: 0.25rem 0.75rem !important;
             font-size: 1.1rem !important;
             min-width: 180px !important;
@@ -195,27 +194,9 @@
             height: 2.5rem !important;
         }
 
-        /* Custom size for Tahun Select2 */
-        .select2-tahun + .select2-container .select2-selection--single {
-            height: calc(2.2rem + 2px) !important;
-            font-size: 1rem !important;
-            min-width: 100px !important;
-            max-width: 100px !important;
-            width: 100px !important;
-        }
-
-        .select2-tahun + .select2-container .select2-selection--single .select2-selection__rendered {
-            line-height: 2rem !important;
-            font-size: 1rem !important;
-            padding-right: 1.5rem !important;
-        }
-
-        .select2-tahun + .select2-container .select2-selection--single .select2-selection__arrow {
-            height: 2.2rem !important;
-        }
-
         /* Responsive tweak for filter bar */
         @media (max-width: 575.98px) {
+
             form.d-flex.align-items-end.flex-wrap>div,
             form.d-flex.align-items-end.flex-wrap>button {
                 width: 100% !important;
@@ -228,14 +209,8 @@
     <script>
         $(document).ready(function() {
             $('.select2-pegawai').select2({
-                width: 'resolve',
+                width: 'resolve', // WAJIB pakai resolve
                 placeholder: '-- Pilih Pegawai --',
-                allowClear: true
-            });
-
-            $('.select2-tahun').select2({
-                width: 'resolve',
-                placeholder: 'Tahun',
                 allowClear: true
             });
         });
