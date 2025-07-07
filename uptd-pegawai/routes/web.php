@@ -33,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
      * ================================
      */
     Route::middleware(['role:Pembantu Bendahara'])->group(function () {
-        Route::resource('pegawai', PegawaiController::class);
+        Route::resource('pegawai', PegawaiController::class)->except(['destroy']);
         Route::resource('potongan-tetap', PotonganTetapController::class);
 
         Route::get('/gaji', [GajiController::class, 'index'])->name('gaji.index');

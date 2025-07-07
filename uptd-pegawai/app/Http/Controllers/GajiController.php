@@ -10,7 +10,7 @@ class GajiController extends Controller
 {
     public function index(Request $request)
     {
-        $pegawaiList = Pegawai::all();
+        $pegawaiList = Pegawai::where('status', 'aktif')->get();
         // Urutan tahun dari sekarang ke 5 tahun ke belakang
         $tahunList = range(date('Y'), date('Y') - 5);
 

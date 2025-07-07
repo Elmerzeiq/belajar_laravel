@@ -22,15 +22,17 @@ class PegawaiController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:25',
-            'nip' => 'required|string|max:20',
+            'nip' => 'required|string|max:20|unique:pegawais,nip',
             'jabatan' => 'required|string',
             'gaji_pokok' => 'required|numeric',
             'insentif_kotor' => 'required|numeric',
+            'status' => 'required|in:aktif,non-aktif',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // validasi foto
         ], [
             'nama.required' => 'Nama Pegawai harus diisi.',
             'nip.required' => 'Nomor Pegawai harus diisi.',
             'nip.max' => 'Nomor Pegawai maksimal 20 karakter.',
+            'nip.unique' => 'Nomor Pegawai (NIP) sudah terdaftar.',
             'jabatan.required' => 'Jabatan harus Dipilih',
             'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
             'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
@@ -68,15 +70,17 @@ class PegawaiController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:25',
-            'nip' => 'required|string|max:20',
+            'nip' => 'required|string|max:20|unique:pegawais,nip,' . $pegawai->id,
             'jabatan' => 'required|string',
             'gaji_pokok' => 'required|numeric',
             'insentif_kotor' => 'required|numeric',
+            'status' => 'required|in:aktif,non-aktif',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // validasi foto
         ], [
             'nama.required' => 'Nama Pegawai harus diisi.',
             'nip.required' => 'Nomor Pegawai harus diisi.',
             'nip.max' => 'Nomor Pegawai maksimal 20 karakter.',
+            'nip.unique' => 'Nomor Pegawai (NIP) sudah terdaftar.',
             'jabatan.required' => 'Jabatan harus Dipilih.',
             'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
             'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
@@ -107,25 +111,4 @@ class PegawaiController extends Controller
         return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil diperbarui.');
     }
 
-    public function destroy(String $id)
-    {
-        $pegawai = Pegawai::findOrFail($id);
-
-        try {
-            $pegawai->delete();
-
-            // Hapus foto hanya jika delete berhasil
-            if ($pegawai->foto && file_exists(public_path('foto_pegawai/' . $pegawai->foto))) {
-                @unlink(public_path('foto_pegawai/' . $pegawai->foto));
-            }
-
-            return redirect()->route('pegawai.index')->with('success', 'Data Pegawai berhasil dihapus.');
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->errorInfo[1] == 1451) {
-                // Foreign key constraint violation
-                return redirect()->route('pegawai.index')->with('error', 'Data pegawai tidak bisa dihapus karena masih memiliki data gaji. Silakan hapus data gaji terlebih dahulu.');
-            }
-            return redirect()->route('pegawai.index')->with('error', 'Terjadi kesalahan saat menghapus data pegawai.');
-        }
-    }
 }
