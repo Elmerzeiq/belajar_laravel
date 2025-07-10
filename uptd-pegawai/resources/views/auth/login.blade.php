@@ -52,7 +52,7 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-end mb-4">
               <h3 class="mb-0"><b>Login</b></h3>
-              <a href="{{ route('register') }}" class="link-primary">Don't have an account?</a>
+              {{-- <a href="{{ route('register') }}" class="link-primary">Don't have an account?</a> --}}
             </div>
             <form action="{{ route('login') }}" method="POST">
                 @csrf
