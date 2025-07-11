@@ -14,7 +14,7 @@ class PembantuBendaharaSeeder extends Seeder
     public function run(): void
     {
         User::updateOrCreate(
-            ['email' => 'pb@gmail.com'],
+            ['email' => 'pembantubendahara@gmail.com'],
             [
                 'name' => 'Pembantu Bendahara',
                 'password' => Hash::make('admin123'),
