@@ -2,29 +2,15 @@
     <header class="pc-header">
         <div class="header-wrapper">
             <div class="ms-auto d-flex align-items-center gap-3">
-                <!-- User Profile Dropdown -->
+                <!-- User Profile Direct Link -->
                 <ul class="list-unstyled mb-0 d-flex align-items-center gap-2">
-                    <li class="dropdown pc-h-item header-user-profile">
-                        <a class="pc-head-link dropdown-toggle arrow-none me-0 d-flex align-items-center"
-                            data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-                            aria-expanded="false">
+                    <li class="pc-h-item header-user-profile">
+                        <a class="pc-head-link arrow-none me-0 d-flex align-items-center"
+                            href="{{ route('profile') }}">
                             <img src="{{ auth()->user()->avatar ? asset('storage/' . auth()->user()->avatar) : asset('template/dist/assets/images/user/avatar-2.jpg') }}"
                                 alt="user-image" class="user-avtar me-2">
                             <span>{{ auth()->user()->name }}</span>
                         </a>
-
-                        <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
-                            <!-- Tambahkan menu profile di sini -->
-                            <a class="dropdown-item" href="{{ route('profile') }}">
-                                <i class="ti ti-user me-2"></i> Profile
-                            </a>
-                            <!-- Tambahkan menu lain jika perlu -->
-                            <!--
-              <a class="dropdown-item" href="#">
-                <i class="ti ti-key me-2"></i> Ganti Password
-              </a>
-              -->
-                        </div>
                     </li>
                 </ul>
 

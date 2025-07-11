@@ -7,6 +7,10 @@
     <!-- [Meta] -->
     <x-meta></x-meta>
 
+    <link rel="stylesheet" href="{{ asset('template/dist/assets/css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <title>@yield('title', 'Aplikasi Penggajian')</title>
+
     <!-- Bootstrap Icons (opsional) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
