@@ -13,6 +13,20 @@ use DB;
 
 class GajiReviewController extends Controller
 {
+    // Helper untuk parsing angka format Indonesia (misal: 100.000,5 -> 100000.5)
+    private function parseIndoNumber($input)
+    {
+        $input = trim($input);
+
+        // Jika mengandung koma → asumsikan desimal format Indonesia
+        if (strpos($input, ',') !== false) {
+            $input = str_replace('.', '', $input); // hilangkan titik ribuan
+            $input = str_replace(',', '.', $input); // ubah koma jadi titik desimal
+        }
+
+        return (float) $input;
+    }
+
     public function importAbsensi(Request $request)
     {
         $request->validate([
@@ -117,15 +131,15 @@ class GajiReviewController extends Controller
 
         DB::beginTransaction();
         try {
-            // Parse angka
-            $gaji_pokok = (int)str_replace('.', '', $request->gaji_pokok);
-            $insentif_tetap = (int)str_replace('.', '', $request->insentif_tetap);
-            $potongan_lain = (int)str_replace('.', '', $request->potongan_lain ?? 0);
-            $insentif_import = (int)str_replace('.', '', $request->insentif_import ?? 0);
-            $bonus = (int)str_replace('.', '', $request->bonus ?? 0);
+            // Parse angka dengan helper
+            $gaji_pokok = $this->parseIndoNumber($request->gaji_pokok);
+            $insentif_tetap = $this->parseIndoNumber($request->insentif_tetap);
+            $potongan_lain = $this->parseIndoNumber($request->potongan_lain ?? 0);
+            $insentif_import = $this->parseIndoNumber($request->insentif_import ?? 0);
+            $bonus = $this->parseIndoNumber($request->bonus ?? 0);
 
             // Potongan insentif import (%) -- TETAP pakai format persen
-            $potongan_insentif_import = (float)str_replace(',', '.', str_replace('.', '', $request->potongan_insentif_import ?? 0));
+            $potongan_insentif_import = $this->parseIndoNumber($request->potongan_insentif_import ?? 0);
             $potongan_insentif_rupiah = $insentif_tetap * ($potongan_insentif_import / 100); // FIX: harus dari insentif_tetap
 
             $potongan_tetap_ids = array_keys($request->potongan_tetap ?? []);
@@ -141,13 +155,8 @@ class GajiReviewController extends Controller
                 $pt = $potongan_tetap_data[$id] ?? null;
                 if (!$pt) continue;
 
-                // --- FIX: parsing jumlah ---
-                if ($pt->tipe == 'persen') {
-                    // Untuk persen, pakai format float saja
-                    $jumlah = (float)str_replace(',', '.', str_replace('.', '', $input_jumlah));
-                } else {
-                    $jumlah = (float)str_replace('.', '', $input_jumlah);
-                }
+                // --- Parsing jumlah dengan helper ---
+                $jumlah = $this->parseIndoNumber($input_jumlah);
 
                 if ($pt->tipe == 'persen') {
                     if ($pt->jenis_potongan == 'gaji_pokok') {
@@ -203,7 +212,8 @@ class GajiReviewController extends Controller
             $total_potongan = $potongan_gaji + $potongan_insentif + $potongan_total + $potongan_lain + $potongan_insentif_rupiah;
 
             // FINAL: hitung gaji bersih sama dengan di frontend
-            $gaji_bersih = max(0, $gaji_setelah_potongan_gaji + $insentif_setelah_potongan_insentif + $bonus - $potongan_total - $potongan_lain - $potongan_insentif_rupiah);
+            // $gaji_bersih = max(0, $gaji_setelah_potongan_gaji + $insentif_setelah_potongan_insentif + $bonus - $potongan_total - $potongan_lain - $potongan_insentif_rupiah);
+            $gaji_bersih = max(0, $gaji_pokok + $insentif_tetap + $bonus - $total_potongan);
 
             Gaji::updateOrCreate([
                 'pegawai_id' => $request->pegawai_id,

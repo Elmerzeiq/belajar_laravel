@@ -48,8 +48,8 @@
                         </div>
                         <div class="col-md-4">
                             <input type="text" name="potongan_tetap[{{ $item->id }}]" class="form-control potongan-tetap-input"
-                                value="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
-                                data-default="{{ old('potongan_tetap.' . $item->id, (int) $item->jumlah) }}"
+                                value="{{ old('potongan_tetap.' . $item->id, $item->jumlah) }}"
+                                data-default="{{ old('potongan_tetap.' . $item->id, $item->jumlah) }}"
                                 data-tipe="{{ $item->tipe }}" data-jenis="{{ $item->jenis_potongan }}" required>
                         </div>
                     </div>
@@ -242,7 +242,11 @@
             [...fields, ...potonganInputs].forEach(an => {
                 an.domElement.addEventListener('input', updateTotal);
             });
-
+            document.getElementById('form-review-gaji').addEventListener('submit', function() {
+                // Unformat semua input AutoNumeric sebelum submit
+                fields.forEach(an => an.unformat());
+                potonganInputs.forEach(an => an.unformat());
+            });
             initNominalInsentifImport();
             updateTotal();
         });
