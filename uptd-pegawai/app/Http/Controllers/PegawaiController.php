@@ -21,15 +21,16 @@ class PegawaiController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:40',
+            'nama' => ['required', 'string', 'max:40', 'regex:/^[\pL\s]+$/u'],
             'nip' => 'required|string|max:20|unique:pegawais,nip',
             'jabatan' => 'required|string',
-            'gaji_pokok' => 'required|numeric',
+            'gaji_pokok' => 'required|numeric|min:10000',
             'insentif_kotor' => 'required|numeric',
             'status' => 'required|in:aktif,non-aktif',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // validasi foto
         ], [
             'nama.required' => 'Nama Pegawai harus diisi.',
+            'nama.regex' => 'Nama Pegawai hanya boleh berisi huruf dan spasi.',
             'nip.required' => 'Nomor Pegawai harus diisi.',
             'nip.max' => 'Nomor Pegawai maksimal 20 karakter.',
             'nip.unique' => 'Nomor Pegawai (NIP) sudah terdaftar.',
@@ -37,6 +38,7 @@ class PegawaiController extends Controller
             'gaji_pokok.required' => 'Gaji Pokok harus diisi.',
             'insentif_kotor.required' => 'Insentif Kotor harus diisi.',
             'gaji_pokok.numeric' => 'Gaji Pokok harus berupa angka.',
+            'gaji_pokok.min' => 'Gaji Pokok minimal 10.000.',
             'insentif_kotor.numeric' => 'Insentif Kotor harus berupa angka.',
             'foto.image' => 'File foto harus berupa gambar.',
             'foto.mimes' => 'Foto harus berformat jpeg, png, jpg, atau gif.',
